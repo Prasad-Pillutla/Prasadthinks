@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>http://prasad-pillutla.github.io/prasadthinks/blog/2015/08/04/parallelism-on-multi-core-processors/</loc>
+    <lastmod>2015-08-04T00:06:58+05:30</lastmod>
+  </url>
+  <url>
     <loc>http://prasad-pillutla.github.io/prasadthinks/blog/2015/07/11/azure-scheduler-can-post-to-azure-service-bus-queue-and-topic/</loc>
     <lastmod>2015-07-11T00:23:09+05:30</lastmod>
   </url>
@@ -63,5 +67,14 @@
   </url>
   <url>
     <loc>http://prasad-pillutla.github.io/prasadthinks/blog/categories/queues/</loc>
+  </url>
+  <url>
+    <loc>http://prasad-pillutla.github.io/prasadthinks/blog/categories/programming/</loc>
+  </url>
+  <url>
+    <loc>http://prasad-pillutla.github.io/prasadthinks/blog/categories/multi-core/</loc>
+  </url>
+  <url>
+    <loc>http://prasad-pillutla.github.io/prasadthinks/blog/categories/performance/</loc>
   </url>
 </urlset>

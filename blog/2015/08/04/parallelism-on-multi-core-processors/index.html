@@ -1,0 +1,447 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Parallelism on Multi-core processors - Prasad Thinks</title>
+  <meta name="author" content="Prasad">
+
+  
+  <meta name="description" content="">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://prasad-pillutla.github.io/prasadthinks/blog/2015/08/04/parallelism-on-multi-core-processors">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/bootstrap/bootstrap.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/stylesheets/bootstrap/responsive.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/stylesheets/syntax/syntax.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <style type="text/css">
+    body {
+      padding-bottom: 40px;
+    }
+    h1 {
+      margin-bottom: 15px;
+    }
+    img {
+      max-width: 100%;
+    }
+    .sharing, .meta, .pager {
+      margin: 20px 0px 20px 0px;
+    }
+    .page-footer p {
+      text-align: center;
+    }
+  </style>
+  <script src="/javascripts/libs/jquery.js"></script>
+  <script src="/javascripts/libs/modernizr-2.0.js"></script>
+  <script src="/javascripts/libs/bootstrap.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="http://feeds.feedburner.com/PrasadThinks" rel="alternate" title="Prasad Thinks" type="application/atom+xml">
+  
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-62377917-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <nav role="navigation"><div class="navbar navbar-inverse">
+  <div class="navbar-inner">
+    <div class="container">
+      <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </a>
+
+      <a class="brand" href="/">Prasad Thinks</a>
+
+      <div class="nav-collapse">
+        <ul class="nav">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/about">About</a></li>
+  <li><a href="/Portfolio">Portfolio</a></li>
+</ul>
+
+
+        <ul class="nav pull-right" data-subscription="rss">
+          <li><a href="http://feeds.feedburner.com/PrasadThinks" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+          
+        </ul>
+
+        
+          <form class="pull-right navbar-search" action="https://www.google.com/search" method="get">
+            <fieldset role="search">
+              <input type="hidden" name="q" value="site:prasad-pillutla.github.io/prasadthinks" />
+              <input class="search-query" type="text" name="q" results="0" placeholder="Search"/>
+            </fieldset>
+          </form>
+        
+      </div>
+    </div>
+  </div>
+</div>
+</nav>
+  <div class="container">
+    <div class="row-fluid">
+      
+<article class="hentry span9" role="article">
+
+  
+  <header class="page-header">
+    
+      <h1 class="entry-title">Parallelism on Multi-core Processors</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-08-04T00:06:58+05:30'><span class='date'><span class='date-month'>Aug</span> <span class='date-day'>4</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>12:06 am</span></time>
+        
+         | <a href="#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>Parallelism, a dark art, no one gets this right first time and many times after that as well. This is one area in software that cannot be understood without understanding underlying hardware(processor). To begin with let me explain the evolution of hardware and then dive into software aspects.</p>
+
+<p>Until early 2000&rsquo;s processors were single core and were capable of executing only one instruction at a time. Focus of Intel and AMD was on adding more cycles to processor so that more instructions can be executed in a second and thereby reduce overall time that a program takes to execute. After reaching to certain point, heat sink issues didn’t allow adding any more cycles to processor.</p>
+
+<p>Then came multi-core processors, started with 2 cores and now we have 8 cores in consumer devices. But how many cores we can add? Each core produces certain amount of heat in a given time, which needs to be dissipated at equal rate so that the processor doesn’t meltdown. With every additional core that gets added there is a need to add more infrastructure to dissipate heat generated processor, which becomes unmanageable both from size and cost perspectives. This is when hardware geeks say we are done and we can’t improve processor to give more cycles because they are constrained by <strong>Laws of physics</strong>.</p>
+
+<p>Now it is up to the software pros, to show some skill. We&rsquo;ll come to skill part in a minute but before that do software programmers understand underlying hardware? Do they write hardware optimized code; I meant do they write programs that use all the cores that are given to them today? Good question, let me try out an example</p>
+
+<pre><code>namespace CompareTPL
+{
+    class Program
+    {        
+        static int addPara(int num)
+        {
+            int j = 0;
+            for (int i = 0; i &lt; 10000000; ++i)
+            {
+                 j = i * i;
+            }
+
+            return j;
+        }        
+
+        static void Main(string[] args)
+        {
+            for (int i = 0; i &lt; 1000; ++i)
+            {
+                addPara(5);
+            }            
+        }
+    }
+}
+</code></pre>
+
+<p>A simple for loop, which madly iterates over a large number and computes product of two numbers. When I run this program on an <strong>Intel I7 quadcore machine with 16GB RAM</strong>, what do I see in <a href="" title="https://msdn.microsoft.com/en-us/library/aa645516(v=vs.71).aspx">perfmon</a></p>
+
+<p><img src="/images/Seq_processing.jpg" alt="Sequential processing" /></p>
+
+<p>Histogram bars tell me that above program is not utilizing all cores efficiently and also the load is unevenly distributed. This means that above program will take longer time to execute.</p>
+
+<p>Now I’ll modify program to use multiple threads to achieve parallelism by replacing <strong>for</strong> with <strong>Parallel.For</strong></p>
+
+<pre><code>namespace CompareTPL
+{
+    class Program
+    {        
+        static int addPara(int num)
+        {
+            int j = 0;
+            for (int i = 0; i &lt; 10000000; ++i)
+            {
+                j = i * i;                
+            }
+
+            return j;
+        }        
+
+        static void Main(string[] args)
+        {
+
+            Parallel.For(0, 1000, i =&gt;
+            {
+                addPara(5);
+            });           
+        }
+    }
+}
+</code></pre>
+
+<p>Now what does <a href="" title="https://msdn.microsoft.com/en-us/library/aa645516(v=vs.71).aspx">perfmon</a> show</p>
+
+<p><img src="/images/Parallel_Processing.jpg" alt="Parallel processing" /></p>
+
+<p>Load is equally distributed among 4 cores and all cores are utilized to their maximum limit. This means the program will run faster. On my machine (<strong>Intel I7, 4 cores, 16GB RAM</strong>) it took 2.487 seconds to complete <strong>Parallel</strong> version and 5.320 seconds to complete <strong>simple for</strong> loop version. It tells me that using all cores effectively will execute program in less time. I’ve added <strong>.NetCLRLocksAndThreads</strong> counters to detect any contentions (in yellow) during execution of this program. Even though there are multiple threads executing same set of instructions there are no contentions reported.</p>
+
+<p>Let’s make this more interesting by replacing i*i with a console statement</p>
+
+<pre><code>class Program
+    {        
+        static int addPara(int num)
+        {
+            int j = 0;
+            for (int i = 0; i &lt; 10000000; ++i)
+            {
+                Console.WriteLine("Test Parallel");
+            }
+
+            return j;
+        }        
+
+        static void Main(string[] args)
+        {
+            Stopwatch s = new Stopwatch();
+            s.Start();
+            Parallel.For(0, 1000, i =&gt;
+            {
+                addPara(5);
+            });
+            s.Stop();
+            Console.WriteLine(s.ElapsedMilliseconds);
+        }
+    }
+} 
+</code></pre>
+
+<p>What do I see from perfmon now?
+Utilization of cores is 100% and load is evenly distributed among 4 cores.</p>
+
+<p><img src="/images/Contention.jpg" alt="Parallel processing With Contentions" /></p>
+
+<p>Total Number of contentions (Total # of Contentions) have gone up significantly and Contentions Rate Per Second has also gone up. Which resource is causing the contention? <strong>Console</strong>, yes console is the resource under contention. Only one thread can write to console at any moment. For writing to console, a thread has to request for lock on Console and wait until it gets lock. There are multiple threads waiting for the same lock/resource and this has a profound impact on performance and execution time.</p>
+
+<p>This means that threads created by <strong>Parallel.For</strong> are waiting for Console to write to it. The same program (with Console) takes more than 30 minutes to complete, which earlier took 2.487 seconds (with no console but multiplication of two numbers i*i). Locks and Contentions are very costly and can kill an application by choking the performance.</p>
+
+<p>Other kind of dependencies that slow down the application are</p>
+
+<pre><code>int op1 = a + b;
+int op2 = op1 + c;
+</code></pre>
+
+<p>In the above code fragment, second expression(<em>op1 + c</em>) cannot be executed until first expression(<em>op1 = a + b</em>) is executed because second expression needs result of first expression(op1) as input. This instruction level dependency clips compiler and forces it to generate sequential instructions which operating system cannot execute in parallel on available cores.</p>
+
+<p>These are the challenges that a hardware engineer cannot address and only software engineer can. No matter how many more cycles we add to processor we cannot improve program’s performance because there is a flaw in the program that is stopping it from being executed in parallel on available cores.</p>
+
+<p>From above examples, it is evident that we have enough processing power today to get things done decently fast and we are not writing programs to make full use of underlying processors. Hence I support hardware guys not adding any more cycles to processor because they already have added more cycles than what a fairly complex program needs.</p>
+
+<p>The point I was trying to explain is that no matter how much parallelism we introduce if there is a contention for resource we’ll not reap benefits.
+To conclude, I’ll summarize things that one needs to remember when introducing parallelism to gain performance</p>
+
+<ul>
+<li><p>Today’s Processors and Operating systems are smart enough to distribute load evenly among to all available cores.</p></li>
+<li><p>Programmer has to make sure that all threads or tasks that he/she are introducing are fairly independent so that there are no contentions. This will allow compiler to break instructions into independent instructions which Operating System can execute in parallel on different cores.</p></li>
+<li><p>Deploying an under-performing application on a multi-core platform will not improve performance beyond certain limit. Application has to go through refactoring to reap maximum benefits of multi-core platforms on which it is deployed.</p></li>
+<li><p>Look into Contentions and processor utilization from Perfmon to evaluate your program’s performance. If you notice contentions or underutilization of available processor cores, then focus on refactoring code.</p></li>
+</ul>
+
+
+<p>In next blog I’ll try to explain differences between Parallel and Asynchronous programming; and also explain when to use which paradigm.</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Prasad</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2015-08-04T00:06:58+05:30'><span class='date'><span class='date-month'>Aug</span> <span class='date-day'>4</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>12:06 am</span></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/multi-core/'>multi-core,</a>, <a class='category' href='/blog/categories/performance/'>performance</a>, <a class='category' href='/blog/categories/programming/'>programming,</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://prasad-pillutla.github.io/prasadthinks/blog/2015/08/04/parallelism-on-multi-core-processors/" data-via="prasad_pillu" data-counturl="http://prasad-pillutla.github.io/prasadthinks/blog/2015/08/04/parallelism-on-multi-core-processors/" >Tweet</a>
+  
+  
+  
+    <div class="fb-like" data-send="true" data-width="450" data-show-faces="false"></div>
+  
+</div>
+
+    
+    
+    <section>
+      <h1>Comments</h1>
+      <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+    </section>
+    
+    <ul class="pager">
+      
+      <li class="previous"><a class="basic-alignment left"
+        href="/blog/2015/07/11/azure-scheduler-can-post-to-azure-service-bus-queue-and-topic/" title="Previous Post:
+        Azure Scheduler can post to Azure Service Bus Queue and Topic">&laquo; Azure Scheduler can post to Azure Service Bus Queue and Topic</a></li>
+      
+      <li><a href="/blog/archives">Blog Archives</a></li>
+      
+    </ul>
+  </footer>
+</article>
+
+<aside class="sidebar-nav span3">
+  
+    <section class="well">
+  <ul id="recent_posts" class="nav nav-list">
+    <li class="nav-header">Recent Posts</li>
+    
+      <li class="post">
+        <a href="/blog/2015/08/04/parallelism-on-multi-core-processors/">Parallelism on Multi-core processors</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/07/11/azure-scheduler-can-post-to-azure-service-bus-queue-and-topic/">Azure Scheduler can post to Azure Service Bus Queue and Topic</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/07/02/azure-service-bus-partition-queues-and-topics-are-they-different/">Azure Service Bus Partition Queues and Topics? Are they different?</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/06/18/nuances-of-azure-event-hubs/">Nuances of Azure Event Hubs</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/06/04/Singularity_of_Software_Development/">Singularity of Software Development</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section class="well">
+  <ul id="gh_repos" class="nav">
+    <li class="nav-header">GitHub Repos</li>
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/Prasad-Pillutla">@Prasad-Pillutla</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        github.showRepos({
+            user: 'Prasad-Pillutla',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/asides/github.js" type="text/javascript"> </script>
+</section>
+
+
+<section>
+  <h1>On Delicious</h1>
+  <div id="delicious"></div>
+  <script type="text/javascript" src="http://feeds.delicious.com/v2/json/prasadpillutla?count=3&amp;sort=date&amp;callback=renderDeliciousLinks"></script>
+  <p><a href="http://delicious.com/prasadpillutla">My Delicious Bookmarks &raquo;</a></p>
+</section>
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo" class="page-footer"><hr>
+<p>
+  Copyright &copy; 2015 - Prasad -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'prasadthinkcom';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://prasad-pillutla.github.io/prasadthinks/blog/2015/08/04/parallelism-on-multi-core-processors/';
+        var disqus_url = 'http://prasad-pillutla.github.io/prasadthinks/blog/2015/08/04/parallelism-on-multi-core-processors/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>
