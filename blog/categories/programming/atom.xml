@@ -4,7 +4,7 @@
   <title><![CDATA[Category: programming, | Prasad Thinks]]></title>
   <link href="http://prasad-pillutla.github.io/prasadthinks/blog/categories/programming/atom.xml" rel="self"/>
   <link href="http://prasad-pillutla.github.io/prasadthinks/"/>
-  <updated>2015-08-10T02:04:48+05:30</updated>
+  <updated>2015-08-10T14:37:04+05:30</updated>
   <id>http://prasad-pillutla.github.io/prasadthinks/</id>
   <author>
     <name><![CDATA[Prasad]]></name>
@@ -18,8 +18,8 @@
     <link href="http://prasad-pillutla.github.io/prasadthinks/blog/2015/08/10/parallelism-on-multi-core-processors-continuation/"/>
     <updated>2015-08-10T00:15:45+05:30</updated>
     <id>http://prasad-pillutla.github.io/prasadthinks/blog/2015/08/10/parallelism-on-multi-core-processors-continuation</id>
-    <content type="html"><![CDATA[<p>Thanks for taking time to read through my last post. I was asked by many on how to handle calls to resources which are not thread-safe and have to be locked either by caller or by library, which exposes the resource.
-Let me pick the same example that I was using in previous post but simplifying it in the interest of time</p>
+    <content type="html"><![CDATA[<p>Thanks for taking time to read through my <a href="" title="http://www.prasadthinks.com/blog/2015/08/04/parallelism-on-multi-core-processors/">last post</a>. I was asked by many on how to handle calls to resources which are not thread-safe and have to be locked either by caller or by library, which exposes the resource.
+Let me pick the same example that I was using in <a href="" title="http://www.prasadthinks.com/blog/2015/08/04/parallelism-on-multi-core-processors/">previous post</a> but simplifying it in the interest of time</p>
 
 <pre><code>for (int i = 0; i &lt; 10000; ++i)
 {
