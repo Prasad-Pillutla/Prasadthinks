@@ -2,10 +2,10 @@
 #      Main Configs       #
 # ----------------------- #
 
-url: http://yoursite.com
-title: My Octopress Blog
-subtitle: A blogging framework for hackers.
-author: Your Name
+url: http://prasad-pillutla.github.io/prasadthinks
+title: Prasad Thinks
+subtitle: 
+author: Prasad
 simple_search: https://www.google.com/search
 description:
 
@@ -16,10 +16,10 @@ description:
 date_format: "ordinal"
 
 # RSS / Email (optional) subscription links (change if using something like Feedburner)
-subscribe_rss: /atom.xml
+subscribe_rss: http://feeds.feedburner.com/PrasadThinks
 subscribe_email:
 # RSS feeds can list your email address if you like
-email:
+email: Prasad.pillu@gmail.com
 
 # ----------------------- #
 #    Jekyll & Plugins     #
@@ -64,13 +64,13 @@ default_asides: [asides/recent_posts.html, asides/github.html, asides/delicious.
 # ----------------------- #
 
 # Github repositories
-github_user:
+github_user: Prasad-Pillutla
 github_repo_count: 0
 github_show_profile_link: true
 github_skip_forks: true
 
 # Twitter
-twitter_user:
+twitter_user: prasad_pillu
 twitter_tweet_button: true
 
 # Google +1
@@ -87,15 +87,16 @@ pinboard_user:
 pinboard_count: 3
 
 # Delicious
-delicious_user:
+delicious_user: prasadpillutla
 delicious_count: 3
 
 # Disqus Comments
-disqus_short_name:
-disqus_show_comment_count: false
+disqus_short_name: PrasadPillutla
+disqus_show_comment_count: true
+disqus_url: prasadthinks
 
 # Google Analytics
-google_analytics_tracking_id:
+google_analytics_tracking_id: UA-62377917-1
 
 # Facebook Like
-facebook_like: false
+facebook_like: true
