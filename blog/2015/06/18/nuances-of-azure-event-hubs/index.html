@@ -1,0 +1,402 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Nuances of Azure Event Hubs - Prasad Thinks</title>
+  <meta name="author" content="Prasad">
+
+  
+  <meta name="description" content="">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://prasad-pillutla.github.io/prasadthinks/blog/2015/06/18/nuances-of-azure-event-hubs">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/bootstrap/bootstrap.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/stylesheets/bootstrap/responsive.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/stylesheets/syntax/syntax.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <style type="text/css">
+    body {
+      padding-bottom: 40px;
+    }
+    h1 {
+      margin-bottom: 15px;
+    }
+    img {
+      max-width: 100%;
+    }
+    .sharing, .meta, .pager {
+      margin: 20px 0px 20px 0px;
+    }
+    .page-footer p {
+      text-align: center;
+    }
+  </style>
+  <script src="/javascripts/libs/jquery.js"></script>
+  <script src="/javascripts/libs/modernizr-2.0.js"></script>
+  <script src="/javascripts/libs/bootstrap.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="http://feeds.feedburner.com/PrasadThinks" rel="alternate" title="Prasad Thinks" type="application/atom+xml">
+  
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-62377917-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <nav role="navigation"><div class="navbar navbar-inverse">
+  <div class="navbar-inner">
+    <div class="container">
+      <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </a>
+
+      <a class="brand" href="/">Prasad Thinks</a>
+
+      <div class="nav-collapse">
+        <ul class="nav">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/about">About</a></li>
+  <li><a href="/Portfolio">Portfolio</a></li>
+</ul>
+
+
+        <ul class="nav pull-right" data-subscription="rss">
+          <li><a href="http://feeds.feedburner.com/PrasadThinks" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+          
+        </ul>
+
+        
+          <form class="pull-right navbar-search" action="https://www.google.com/search" method="get">
+            <fieldset role="search">
+              <input type="hidden" name="q" value="site:prasad-pillutla.github.io/prasadthinks" />
+              <input class="search-query" type="text" name="q" results="0" placeholder="Search"/>
+            </fieldset>
+          </form>
+        
+      </div>
+    </div>
+  </div>
+</div>
+</nav>
+  <div class="container">
+    <div class="row-fluid">
+      
+<article class="hentry span9" role="article">
+
+  
+  <header class="page-header">
+    
+      <h1 class="entry-title">Nuances of Azure Event Hubs</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-06-18T22:43:27+05:30'><span class='date'><span class='date-month'>Jun</span> <span class='date-day'>18</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>10:43 pm</span></time>
+        
+         | <a href="#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>Event Hub, Microsoft’s PaaS offering to accept millions of events per second is built to handle traffic for Internet of Things scenarios. It (Event Hub) is an offshoot of Partitioned queues/topics and leverages same partitioning strategy. I know you would ask, why does Event Hub scale and Queues/Topics don’t? To achieve scale certain features like session based messaging, TTL were let go in Event Hub, which makes it light-weight and achieve the scale.</p>
+
+<p>In this post I’ll not be writing about Event Hubs functionality, which is available on <a href="http://azure.microsoft.com/en-in/services/event-hubs/">MSDN</a> instead I’ll be sharing subtle aspects which are important to know while using Event Hubs.</p>
+
+<p>Event hub speed is measured in Throughput Units (TPU), which defines the maximum event rate (ingress and egress) i.e., 1 Throughput unit equals to 1 MB/sec ingress and 2MB/sec egress and 2 Throughput units equals to 2 MB/sec ingress and 4MB/sec egress and so on.</p>
+
+<p>Event Hubs are designed for downstream parallelism which is why egress rate is double that of Ingress. To understand this better let’s do some math</p>
+
+<p>Ingress rate per partition => (TPU / No of Partitions)</p>
+
+<p>Egress rate per partition => ((TPU * 2) / No of Partitions); Egress is twice of Ingress for TPU</p>
+
+<table>
+<thead>
+<tr>
+<th style="text-align:center;">         TPU  </th>
+<th style="text-align:center;">        Partitions </th>
+<th style="text-align:center;">            Ingress            </th>
+<th style="text-align:right;">          Egress            </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center;">          1   </td>
+<td style="text-align:center;">        8          </td>
+<td style="text-align:center;">     0.125 MB/Sec (=> 1/8)     </td>
+<td style="text-align:right;">  0.25 MB/Sec (=> 2/8)      </td>
+</tr>
+<tr>
+<td style="text-align:center;">          2   </td>
+<td style="text-align:center;">        8          </td>
+<td style="text-align:center;">     0.250 MB/Sec (=> 2/8)     </td>
+<td style="text-align:right;">  0.50 MB/Sec (=> 4/8)      </td>
+</tr>
+<tr>
+<td style="text-align:center;">          1   </td>
+<td style="text-align:center;">       32          </td>
+<td style="text-align:center;">     0.03125 MB/Sec (=> 1/32)  </td>
+<td style="text-align:right;">  0.0625 MB/Sec (=> 2/32)   </td>
+</tr>
+<tr>
+<td style="text-align:center;">          2   </td>
+<td style="text-align:center;">       32          </td>
+<td style="text-align:center;">     0.0625 MB/Sec (=> 2/32)   </td>
+<td style="text-align:right;">  0.125 MB/Sec (=> 4/32)    </td>
+</tr>
+</tbody>
+</table>
+
+
+<p> <strong>TPU</strong> - <em>No of Throughput Units</em></p>
+
+<p><strong>Partitions</strong> - <em>Eventhub partitions</em></p>
+
+<p><strong>Ingress</strong> - <em>Ingress rate per partition (MB/Sec)</em></p>
+
+<p><strong>Egress</strong> - <em>Egress rate per partition (MB/Sec)</em></p>
+
+<p>For example, if user selects 1 TPU and 8 partitions and all partitions see even load, each partition gets approximately <em>0.125 MB/Sec</em> ingress throughput for a total aggregate throughput of 1 MB/Sec(8 x 0.125) and if user selects 2 TPU and 8 partitions, each partition gets approximately <em>0.25 MB/Sec</em> (8 x 0.25).</p>
+
+<p>However there is cap on maximum ingress and egress that a partition can deliver, which is 1 MB/sec ingress and 2MB/Sec Egress. For instance, I choose 2 TPUs and 8 Partitions for an Event Hub, and one partition is receiving all of traffic and other partitions are sitting idle. When this partition receives more than 1MB/Sec it starts throttling and doesn’t matter if maximum traffic that Event Hub with 2 TPUs can take is 2MB/Sec.</p>
+
+<p>To summarize, irrespective of load patterns of individual partitions and maximum throughput defined by TPUs selected, <em>a partition cannot take more than 1 MB/Sec ingress</em>.</p>
+
+<p>Let’s say user selects 8 partitions and 10 TPUs for an Event Hub; total ingress that it can support is 10 MB/Sec which means in case of even load distribution each partition will receive 1.25 MB/Sec. How?</p>
+
+<p>=> Each TPU guarantees 1MB/Sec Ingress</p>
+
+<p>=> 10 TPUs will deliver 10 * 1 MB/Sec, which is 10 MB/Sec</p>
+
+<p>=> Total number of partitions to cater traffic is 8</p>
+
+<p>=> Even distribution means 10 MB per Sec/ 8 Partitions, which is 1.25 MB/Sec per Partition</p>
+
+<p>But there is cap on maximum throughput for a partition, which is 1MB/Sec. What does this imply? This means that partitions will throttle if Event Hub is operating at its full capacity. This brings us to most important decision point, Number of Partitions and TPUs have to be selected together and after evaluating load patterns. Event Hub allows changing TPUs anytime but not partitions. Once allocated partitions cannot be increased or decreased and to alter their count Event hub has to be recreated.</p>
+
+<p>Too many parameters to consider aren’t they; let me make it simple with an example. I’ve a scenario where peak traffic volume is 2,000 transactions/Second and each transaction(message) is of size 15 KB. Net volume that Event Hub will have to deal with is</p>
+
+<p>=> 2,000 * 15 KB => 30,000 KB/Sec => 30 MB/Sec (for simplicity 1 MB = 1000 KB)</p>
+
+<p>I choose to have 8 partitions and in the case of even load distribution each partition will receive</p>
+
+<p>=> 30 MB per Sec / 8 Partitions => 3.75 MB/Sec per Partition, which is way more than maximum ingress rate of a partition (1 MB/sec). 8 partitions Event Hub will throttle for above scenario.</p>
+
+<p>Now I configure 32 partitions and in the case of even load distribution each partition will receive</p>
+
+<p>=> 30 MB per Sec / 32 partitions => 0.9375 MB/Sec per Partition, which is less than maximum ingress rate of a partition (1 MB/sec). 32 partitions will cater my requirement (2000 transactions per Sec, each transaction is of 15 KB size) without throttling.</p>
+
+<p>Azure portal allows user to create maximum of 32 partitions and provision upto 20 TPUs. If user requires more throughput units (<em>partitions implied</em>) he/she should contact <a href="http://azure.microsoft.com/en-in/support/options/">Azure support</a>.</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Prasad</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2015-06-18T22:43:27+05:30'><span class='date'><span class='date-month'>Jun</span> <span class='date-day'>18</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>10:43 pm</span></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/azure/'>azure,</a>, <a class='category' href='/blog/categories/bus/'>bus</a>, <a class='category' href='/blog/categories/eventhub/'>eventhub,</a>, <a class='category' href='/blog/categories/service/'>service</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://prasad-pillutla.github.io/prasadthinks/blog/2015/06/18/nuances-of-azure-event-hubs/" data-via="prasad_pillu" data-counturl="http://prasad-pillutla.github.io/prasadthinks/blog/2015/06/18/nuances-of-azure-event-hubs/" >Tweet</a>
+  
+  
+  
+    <div class="fb-like" data-send="true" data-width="450" data-show-faces="false"></div>
+  
+</div>
+
+    
+    
+    <section>
+      <h1>Comments</h1>
+      <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+    </section>
+    
+    <ul class="pager">
+      
+      <li class="previous"><a class="basic-alignment left"
+        href="/blog/2015/06/04/Singularity_of_Software_Development/" title="Previous Post:
+        Singularity of Software Development">&laquo; Singularity of Software Development</a></li>
+      
+      <li><a href="/blog/archives">Blog Archives</a></li>
+      
+      <li class="next"><a class="basic-alignment right" href="/blog/2015/07/02/azure-service-bus-partition-queues-and-topics-are-they-different/"
+        title="Next Post: Azure Service Bus Partition Queues and Topics? Are they different?">Azure Service Bus Partition Queues and Topics? Are they different?
+        &raquo;</a></li>
+      
+    </ul>
+  </footer>
+</article>
+
+<aside class="sidebar-nav span3">
+  
+    <section class="well">
+  <ul id="recent_posts" class="nav nav-list">
+    <li class="nav-header">Recent Posts</li>
+    
+      <li class="post">
+        <a href="/blog/2015/08/10/parallelism-on-multi-core-processors-continuation/">Parallelism on Multi-core Processors: continuation</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/08/04/parallelism-on-multi-core-processors/">Parallelism on Multi-core processors</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/07/11/azure-scheduler-can-post-to-azure-service-bus-queue-and-topic/">Azure Scheduler can post to Azure Service Bus Queue and Topic</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/07/02/azure-service-bus-partition-queues-and-topics-are-they-different/">Azure Service Bus Partition Queues and Topics? Are they different?</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/06/18/nuances-of-azure-event-hubs/">Nuances of Azure Event Hubs</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section class="well">
+  <ul id="gh_repos" class="nav">
+    <li class="nav-header">GitHub Repos</li>
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/Prasad-Pillutla">@Prasad-Pillutla</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        github.showRepos({
+            user: 'Prasad-Pillutla',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/asides/github.js" type="text/javascript"> </script>
+</section>
+
+
+<section>
+  <h1>On Delicious</h1>
+  <div id="delicious"></div>
+  <script type="text/javascript" src="http://feeds.delicious.com/v2/json/prasadpillutla?count=3&amp;sort=date&amp;callback=renderDeliciousLinks"></script>
+  <p><a href="http://delicious.com/prasadpillutla">My Delicious Bookmarks &raquo;</a></p>
+</section>
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo" class="page-footer"><hr>
+<p>
+  Copyright &copy; 2015 - Prasad -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'prasadthinkcom';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://prasad-pillutla.github.io/prasadthinks/blog/2015/06/18/nuances-of-azure-event-hubs/';
+        var disqus_url = 'http://prasad-pillutla.github.io/prasadthinks/blog/2015/06/18/nuances-of-azure-event-hubs/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

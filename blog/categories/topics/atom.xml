@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: topics, | Prasad Thinks]]></title>
+  <link href="http://prasad-pillutla.github.io/prasadthinks/blog/categories/topics/atom.xml" rel="self"/>
+  <link href="http://prasad-pillutla.github.io/prasadthinks/"/>
+  <updated>2015-08-10T14:53:30+05:30</updated>
+  <id>http://prasad-pillutla.github.io/prasadthinks/</id>
+  <author>
+    <name><![CDATA[Prasad]]></name>
+    <email><![CDATA[Prasad.pillu@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Azure Service Bus Partition Queues and Topics? Are they different?]]></title>
+    <link href="http://prasad-pillutla.github.io/prasadthinks/blog/2015/07/02/azure-service-bus-partition-queues-and-topics-are-they-different/"/>
+    <updated>2015-07-02T23:51:46+05:30</updated>
+    <id>http://prasad-pillutla.github.io/prasadthinks/blog/2015/07/02/azure-service-bus-partition-queues-and-topics-are-they-different</id>
+    <content type="html"><![CDATA[<p>Queues/Topics have been there for longtime and everyone thinks they know everything about them. I would park that discussion for later date and discuss about partitioning, which was introduced as an add-on capability to these services.</p>
+
+<p>In a normal service bus queue/topic there is only message store powered by SQL to store messages. If this message store is not reachable for any reason then entire queue/topic is unavailable. Throughput of queue/topic is limited by this single message store, which more often than not is a bottleneck.</p>
+
+<p>In partitioned queue/topic there are multiple message stores (also called as partition) and, read and write requests are catered by different partitions, which will reduce contention. If a client is writing a message to queue and another client is reading from queue these two operations can happen on two different partitions. This isolation gives boost to performance and improves overall throughput.</p>
+
+<p><em>Behind the scenes</em>
+Partitioned queues/topics can be created by enabling a checkbox box in configure queue/topic dialog. By default partitioning is enabled and below screenshots show how to enable/disable partitioning.</p>
+
+<p><strong>Create Queue</strong>
+<img src="/images/basic.jpg" alt="Create Queue" /></p>
+
+<p><strong>Configure Queue</strong>
+<img src="/images/part.jpg" alt="Configure Queue" /></p>
+
+<p><strong>Queue summary</strong>
+<img src="/images/qsummary.jpg" alt="Queue summary" /></p>
+
+<p>In the above screenshots, you can see I mentioned queue size (Max Size) as 1 GB but queue 16 GB queue is created? What could have happened? When partitioning is enabled Azure creates 16 partitions or message stores at the backend, each partition is of the size, which was mentioned during create in configure queue dialog. In the above screenshot, I requested 1 GB queue and enabled partitioning so Azure created 16 partitions each of the size 1 GB (, which I mentioned during create). What if I mentioned 5 GB as queue size during create, I get 80 GB queue (16 partitions each of 5 GB size).</p>
+
+<p>Additional space is fine but how does it impact my reads and writes? As shown in diagram below (for simplicity only 3 partitions are shown), 9 messages (Msg 1 thru Msg 9) are sent to queue and queue internally uses round robin algorithm to send messages into partitions. If there is one receiver reading messages from queue, messages are picked from partitions at random. If we abandon a message after reading it then the message goes back to partition from which it was picked and also doesn’t break sequence in that partition. For example, if we pick Msg 5 in partition 2 and then abandon it, it will still be second message in partition 2. But when next receive call is made by receiver, queue can return message from any partition (could also be Msg 5 again). This can break sequential processing because we are expecting Msg 5 (which will always be the case if the queue doesn’t have partitions) and with partitions there is no gurantee that Msg 5 will be returned.</p>
+
+<p><strong>Message selection</strong>
+<img src="/images/process.jpg" alt="Message selection" /></p>
+
+<p>If a partition is unavailable when a client is writing a message into it then queue will send message to next available partition. While reading, message from available partition is returned so there is no wait time like it is in single partition queue and will improve performance. Client application is abstracted from this entire process of partition selection. To enable high availability for queues/topics during local failures it is advised to turn-on partitions during their creation. <em>If sequential processing is a hard requirement then don’t turn-on partitioning</em>.</p>
+]]></content>
+  </entry>
+  
+</feed>

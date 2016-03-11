@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: eventhub, | Prasad Thinks]]></title>
+  <link href="http://prasad-pillutla.github.io/prasadthinks/blog/categories/eventhub/atom.xml" rel="self"/>
+  <link href="http://prasad-pillutla.github.io/prasadthinks/"/>
+  <updated>2015-08-10T14:53:30+05:30</updated>
+  <id>http://prasad-pillutla.github.io/prasadthinks/</id>
+  <author>
+    <name><![CDATA[Prasad]]></name>
+    <email><![CDATA[Prasad.pillu@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Nuances of Azure Event Hubs]]></title>
+    <link href="http://prasad-pillutla.github.io/prasadthinks/blog/2015/06/18/nuances-of-azure-event-hubs/"/>
+    <updated>2015-06-18T22:43:27+05:30</updated>
+    <id>http://prasad-pillutla.github.io/prasadthinks/blog/2015/06/18/nuances-of-azure-event-hubs</id>
+    <content type="html"><![CDATA[<p>Event Hub, Microsoft’s PaaS offering to accept millions of events per second is built to handle traffic for Internet of Things scenarios. It (Event Hub) is an offshoot of Partitioned queues/topics and leverages same partitioning strategy. I know you would ask, why does Event Hub scale and Queues/Topics don’t? To achieve scale certain features like session based messaging, TTL were let go in Event Hub, which makes it light-weight and achieve the scale.</p>
+
+<p>In this post I’ll not be writing about Event Hubs functionality, which is available on <a href="http://azure.microsoft.com/en-in/services/event-hubs/">MSDN</a> instead I’ll be sharing subtle aspects which are important to know while using Event Hubs.</p>
+
+<p>Event hub speed is measured in Throughput Units (TPU), which defines the maximum event rate (ingress and egress) i.e., 1 Throughput unit equals to 1 MB/sec ingress and 2MB/sec egress and 2 Throughput units equals to 2 MB/sec ingress and 4MB/sec egress and so on.</p>
+
+<p>Event Hubs are designed for downstream parallelism which is why egress rate is double that of Ingress. To understand this better let’s do some math</p>
+
+<p>Ingress rate per partition => (TPU / No of Partitions)</p>
+
+<p>Egress rate per partition => ((TPU * 2) / No of Partitions); Egress is twice of Ingress for TPU</p>
+
+<table>
+<thead>
+<tr>
+<th style="text-align:center;">         TPU  </th>
+<th style="text-align:center;">        Partitions </th>
+<th style="text-align:center;">            Ingress            </th>
+<th style="text-align:right;">          Egress            </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center;">          1   </td>
+<td style="text-align:center;">        8          </td>
+<td style="text-align:center;">     0.125 MB/Sec (=> 1/8)     </td>
+<td style="text-align:right;">  0.25 MB/Sec (=> 2/8)      </td>
+</tr>
+<tr>
+<td style="text-align:center;">          2   </td>
+<td style="text-align:center;">        8          </td>
+<td style="text-align:center;">     0.250 MB/Sec (=> 2/8)     </td>
+<td style="text-align:right;">  0.50 MB/Sec (=> 4/8)      </td>
+</tr>
+<tr>
+<td style="text-align:center;">          1   </td>
+<td style="text-align:center;">       32          </td>
+<td style="text-align:center;">     0.03125 MB/Sec (=> 1/32)  </td>
+<td style="text-align:right;">  0.0625 MB/Sec (=> 2/32)   </td>
+</tr>
+<tr>
+<td style="text-align:center;">          2   </td>
+<td style="text-align:center;">       32          </td>
+<td style="text-align:center;">     0.0625 MB/Sec (=> 2/32)   </td>
+<td style="text-align:right;">  0.125 MB/Sec (=> 4/32)    </td>
+</tr>
+</tbody>
+</table>
+
+
+<p> <strong>TPU</strong> - <em>No of Throughput Units</em></p>
+
+<p><strong>Partitions</strong> - <em>Eventhub partitions</em></p>
+
+<p><strong>Ingress</strong> - <em>Ingress rate per partition (MB/Sec)</em></p>
+
+<p><strong>Egress</strong> - <em>Egress rate per partition (MB/Sec)</em></p>
+
+<p>For example, if user selects 1 TPU and 8 partitions and all partitions see even load, each partition gets approximately <em>0.125 MB/Sec</em> ingress throughput for a total aggregate throughput of 1 MB/Sec(8 x 0.125) and if user selects 2 TPU and 8 partitions, each partition gets approximately <em>0.25 MB/Sec</em> (8 x 0.25).</p>
+
+<p>However there is cap on maximum ingress and egress that a partition can deliver, which is 1 MB/sec ingress and 2MB/Sec Egress. For instance, I choose 2 TPUs and 8 Partitions for an Event Hub, and one partition is receiving all of traffic and other partitions are sitting idle. When this partition receives more than 1MB/Sec it starts throttling and doesn’t matter if maximum traffic that Event Hub with 2 TPUs can take is 2MB/Sec.</p>
+
+<p>To summarize, irrespective of load patterns of individual partitions and maximum throughput defined by TPUs selected, <em>a partition cannot take more than 1 MB/Sec ingress</em>.</p>
+
+<p>Let’s say user selects 8 partitions and 10 TPUs for an Event Hub; total ingress that it can support is 10 MB/Sec which means in case of even load distribution each partition will receive 1.25 MB/Sec. How?</p>
+
+<p>=> Each TPU guarantees 1MB/Sec Ingress</p>
+
+<p>=> 10 TPUs will deliver 10 * 1 MB/Sec, which is 10 MB/Sec</p>
+
+<p>=> Total number of partitions to cater traffic is 8</p>
+
+<p>=> Even distribution means 10 MB per Sec/ 8 Partitions, which is 1.25 MB/Sec per Partition</p>
+
+<p>But there is cap on maximum throughput for a partition, which is 1MB/Sec. What does this imply? This means that partitions will throttle if Event Hub is operating at its full capacity. This brings us to most important decision point, Number of Partitions and TPUs have to be selected together and after evaluating load patterns. Event Hub allows changing TPUs anytime but not partitions. Once allocated partitions cannot be increased or decreased and to alter their count Event hub has to be recreated.</p>
+
+<p>Too many parameters to consider aren’t they; let me make it simple with an example. I’ve a scenario where peak traffic volume is 2,000 transactions/Second and each transaction(message) is of size 15 KB. Net volume that Event Hub will have to deal with is</p>
+
+<p>=> 2,000 * 15 KB => 30,000 KB/Sec => 30 MB/Sec (for simplicity 1 MB = 1000 KB)</p>
+
+<p>I choose to have 8 partitions and in the case of even load distribution each partition will receive</p>
+
+<p>=> 30 MB per Sec / 8 Partitions => 3.75 MB/Sec per Partition, which is way more than maximum ingress rate of a partition (1 MB/sec). 8 partitions Event Hub will throttle for above scenario.</p>
+
+<p>Now I configure 32 partitions and in the case of even load distribution each partition will receive</p>
+
+<p>=> 30 MB per Sec / 32 partitions => 0.9375 MB/Sec per Partition, which is less than maximum ingress rate of a partition (1 MB/sec). 32 partitions will cater my requirement (2000 transactions per Sec, each transaction is of 15 KB size) without throttling.</p>
+
+<p>Azure portal allows user to create maximum of 32 partitions and provision upto 20 TPUs. If user requires more throughput units (<em>partitions implied</em>) he/she should contact <a href="http://azure.microsoft.com/en-in/support/options/">Azure support</a>.</p>
+]]></content>
+  </entry>
+  
+</feed>

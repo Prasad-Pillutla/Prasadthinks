@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: queues | Prasad Thinks]]></title>
+  <link href="http://prasad-pillutla.github.io/prasadthinks/blog/categories/queues/atom.xml" rel="self"/>
+  <link href="http://prasad-pillutla.github.io/prasadthinks/"/>
+  <updated>2015-08-10T14:53:30+05:30</updated>
+  <id>http://prasad-pillutla.github.io/prasadthinks/</id>
+  <author>
+    <name><![CDATA[Prasad]]></name>
+    <email><![CDATA[Prasad.pillu@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Azure Scheduler can post to Azure Service Bus Queue and Topic]]></title>
+    <link href="http://prasad-pillutla.github.io/prasadthinks/blog/2015/07/11/azure-scheduler-can-post-to-azure-service-bus-queue-and-topic/"/>
+    <updated>2015-07-11T00:23:09+05:30</updated>
+    <id>http://prasad-pillutla.github.io/prasadthinks/blog/2015/07/11/azure-scheduler-can-post-to-azure-service-bus-queue-and-topic</id>
+    <content type="html"><![CDATA[<p>Azure Scheduler today doesn’t allow submitting long running jobs to Service bus queues/topics but does allow submitting them to storage queues. What if, there is a requirement to submit jobs to service bus queues/topics so that features like duplicate detection can be leveraged to eliminate duplicate jobs from getting executed. One can submit messages to Service bus queue from Scheduler dashboard using REST APIs. Here is how we do it</p>
+
+<p><img src="/images/SB.jpg" alt="Job Action" /></p>
+
+<p>Select <strong>Post</strong> method in Scheduler Job dashboard, which displays above template. URI will represent Queue or Topic where ever we want to send message. URI template for Service bus would be <em>http{s}://{serviceNamespace}.servicebus.windows.net/{queuePath|topicPath}/messages</em></p>
+
+<p>we can add timeout for POST request by appending timeout at the end of Uri. POST Uri with timeout will be <em>http{s}://{serviceNamespace}.servicebus.windows.net/{queuePath|topicPath}/messages?timeout=</em></p>
+
+<p><strong>example</strong>: <em>http{s}://{serviceNamespace}.servicebus.windows.net/{queuePath|topicPath}/messages?timeout=60</em></p>
+
+<p><strong>BrokerProperties</strong> allows one to set properties like TimeToLive, MessageId, Label etc… These properties have to beaded in Json format and this is mandatory</p>
+
+<p><strong>Authorization</strong> property is used to define AccessToken.</p>
+
+<p><strong>Content-Type</strong> value can be anything but it is mandatory to have this parameter added to header.</p>
+
+<p>When Scheduler executes the job, a message will be posted to Service Bus Queue or Topic. In Service Bus Explorer screen snapshot below, we can see properties that we set while creating the job
+<img src="/images/SBExp.jpg" alt="Service Bus Explorer" /></p>
+
+<p>You can do this from code as well and below is the sample</p>
+
+<pre><code>    using System;
+    using Microsoft.WindowsAzure.Scheduler;
+    using Microsoft.Azure;
+    using Microsoft.WindowsAzure.Scheduler.Models;
+    using Microsoft.WindowsAzure.Management.Scheduler;
+
+    namespace SchedulerFault
+    {
+        public class Scheduler
+        {
+            private SchedulerClient SchdClient;
+            SubscriptionCloudCredentials credentials;
+            public Scheduler(SubscriptionCloudCredentials creds)
+            {
+                credentials = creds;
+                SchdClient = new SchedulerClient("&lt;Scheduler Service&gt;", "Job Collection Name", credentials);                
+            }
+
+            public void inject()
+            {
+                var Request = new JobHttpRequest(new Uri(@"&lt;Topic/Queue URI&gt;?timeout=60"), "POST");
+                Request.Body = "Test Newton Properties";
+                Request.Headers.Add("BrokerProperties", "{\"Label\":\"M2\", \"MessageId\":\"Id1\"}");
+                Request.Headers.Add("Content-Type","application/xml");
+                Request.Headers.Add("Authorization", "&lt;Access Token&gt;");
+
+                var StartTime = DateTime.Now;
+                var Recurrence = new JobRecurrence()
+                {
+                    Frequency = JobRecurrenceFrequency.Minute,
+                    Interval = 1,
+                    Count = 5
+                };
+                var Action = new JobAction();
+                Action.Type = JobActionType.Http;
+                Action.Request = Request;
+                var jobParam = new JobCreateParameters();
+                jobParam.Action = Action;
+                jobParam.Recurrence = Recurrence;
+                jobParam.StartTime = StartTime;
+
+                try
+                {
+                    var Response = SchdClient.Jobs.Create(jobParam);
+                    Console.WriteLine(Response.RequestId);
+                    Console.WriteLine(Response.StatusCode);
+                    Console.WriteLine(Response.Job.Id);
+                }
+                catch(Exception ex)
+                {
+                    Console.WriteLine(ex.Message);            
+                }            
+            }
+        }
+    }
+</code></pre>
+
+<p>We need to install Microsoft WindowsAzure Management Scheduler Nuget package has necessary SDK for managing Scheduler and jobs in it.</p>
+
+<p>Scheduler service name(first parameter for SchedulerClient constructor) can be obtained from Scheduler dashboard or it follows following format <strong>CS-RegionName-scheduler</strong>. If scheduler is created int Southeast Asia then Service name will be <strong>CS-SoutheastAsia-scheduler</strong>. If it is created in SouthCentralUS then service name will be <strong>CS-SouthCentralUS-scheduler</strong>.</p>
+
+<p>Job Collection name(second parameter for SchedulerClient constructor) is a container in which Job will be created.</p>
+
+<p>Simple aah, If anyone says to you that Azure Scheduler cannot submit messages to Service Bus topic or queue then you know what to say and where to re-direct them.</p>
+]]></content>
+  </entry>
+  
+</feed>

@@ -1,0 +1,811 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Prasad Thinks</title>
+  <meta name="author" content="Prasad">
+
+  
+  <meta name="description" content="">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://prasad-pillutla.github.io/prasadthinks">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/bootstrap/bootstrap.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/stylesheets/bootstrap/responsive.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/stylesheets/syntax/syntax.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <style type="text/css">
+    body {
+      padding-bottom: 40px;
+    }
+    h1 {
+      margin-bottom: 15px;
+    }
+    img {
+      max-width: 100%;
+    }
+    .sharing, .meta, .pager {
+      margin: 20px 0px 20px 0px;
+    }
+    .page-footer p {
+      text-align: center;
+    }
+  </style>
+  <script src="/javascripts/libs/jquery.js"></script>
+  <script src="/javascripts/libs/modernizr-2.0.js"></script>
+  <script src="/javascripts/libs/bootstrap.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="http://feeds.feedburner.com/PrasadThinks" rel="alternate" title="Prasad Thinks" type="application/atom+xml">
+  
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-62377917-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <nav role="navigation"><div class="navbar navbar-inverse">
+  <div class="navbar-inner">
+    <div class="container">
+      <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </a>
+
+      <a class="brand" href="/">Prasad Thinks</a>
+
+      <div class="nav-collapse">
+        <ul class="nav">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/about">About</a></li>
+  <li><a href="/Portfolio">Portfolio</a></li>
+</ul>
+
+
+        <ul class="nav pull-right" data-subscription="rss">
+          <li><a href="http://feeds.feedburner.com/PrasadThinks" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+          
+        </ul>
+
+        
+          <form class="pull-right navbar-search" action="https://www.google.com/search" method="get">
+            <fieldset role="search">
+              <input type="hidden" name="q" value="site:prasad-pillutla.github.io/prasadthinks" />
+              <input class="search-query" type="text" name="q" results="0" placeholder="Search"/>
+            </fieldset>
+          </form>
+        
+      </div>
+    </div>
+  </div>
+</div>
+</nav>
+  <div class="container">
+    <div class="row-fluid">
+      <div class="span9">
+  
+  
+  
+    <article>
+      
+  <header class="page-header">
+    
+      <h1 class="entry-title"><a href="/blog/2015/08/10/parallelism-on-multi-core-processors-continuation/">Parallelism on Multi-core Processors: Continuation</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-08-10T00:15:45+05:30'><span class='date'><span class='date-month'>Aug</span> <span class='date-day'>10</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>12:15 am</span></time>
+        
+         | <a href="/blog/2015/08/10/parallelism-on-multi-core-processors-continuation/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Thanks for taking time to read through my <a href="" title="http://www.prasadthinks.com/blog/2015/08/04/parallelism-on-multi-core-processors/">last post</a>. I was asked by many on how to handle calls to resources which are not thread-safe and have to be locked either by caller or by library, which exposes the resource.
+Let me pick the same example that I was using in <a href="" title="http://www.prasadthinks.com/blog/2015/08/04/parallelism-on-multi-core-processors/">previous post</a> but simplifying it in the interest of time</p>
+
+<pre><code>for (int i = 0; i &lt; 10000; ++i)
+{
+    Console.WriteLine("Test Parallel");
+}
+</code></pre>
+
+<p>How much time does this for loop take to complete? Ok, How much time would a parallel version of it take to run? Guesses???</p>
+
+<pre><code>Parallel.For(0, 10000, i =&gt;
+{
+    Console.WriteLine("Test Parallel");
+});
+</code></pre>
+
+<p>On my laptop, simple for loop took <strong>~4 seconds</strong> and parallel for took <strong>~6 seconds</strong>.</p>
+
+<p>If you thought parallel loop will take less time, then you are wrong? Why does parallel version take more time? I’ll try to keep it simple and try my best not to confuse</p>
+
+<p>Let us assume a scenario where there are 2 threads (T1 and T2) and a resource which can be accessed by only one thread at a time, like resources like <strong>console</strong>, <strong>file handle</strong>, etc.
+In this scenario let us assume that Thread T1 started first and acquired lock on console and then Thread T2 started and tries to acquire lock on console but since it is already taken by Thread T1, Thread T2 will wait for X nanoseconds before attempting again to acquire lock. If lock is still not available Thread T2 will wait for X nanoseconds once again before attempting again to acquire lock and this continues until Thread T2 acquires lock or until it times out(if applicable), whichever is earlier. There is a fixed amount of time that a thread has to wait before attempting to acquire a lock and thread will not be informed about availability of lock so that it can come out of wait/sleep and take the lock. <strong>This is the overhead of contention and cannot be negotiated</strong>. This is what exactly is happening in Parallel For loop and leading to more execution time than simple for loop.</p>
+
+<p>Above explanation is overly simplified contention management in <strong>.Net</strong> but in reality it is much more complex and sophisticated. For the purpose of this topic above explanation serves enough.</p>
+
+<p>To conclude,<strong>whenever there is a contention for resource or a resource can be accessed by only one thread at a time it is always advised to take sequential route than parallel route for performance benefits</strong>.</p>
+
+<p>Let me know what you guys think&hellip;</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header class="page-header">
+    
+      <h1 class="entry-title"><a href="/blog/2015/08/04/parallelism-on-multi-core-processors/">Parallelism on Multi-core Processors</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-08-04T00:06:58+05:30'><span class='date'><span class='date-month'>Aug</span> <span class='date-day'>4</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>12:06 am</span></time>
+        
+         | <a href="/blog/2015/08/04/parallelism-on-multi-core-processors/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Parallelism, a dark art, no one gets this right first time and many times after that as well. This is one area in software that cannot be understood without understanding underlying hardware(processor). To begin with let me explain the evolution of hardware and then dive into software aspects.</p>
+
+<p>Until early 2000&rsquo;s processors were single core and were capable of executing only one instruction at a time. Focus of Intel and AMD was on adding more cycles to processor so that more instructions can be executed in a second and thereby reduce overall time that a program takes to execute. After reaching to certain point, heat sink issues didn’t allow adding any more cycles to processor.</p>
+
+<p>Then came multi-core processors, started with 2 cores and now we have 8 cores in consumer devices. But how many cores we can add? Each core produces certain amount of heat in a given time, which needs to be dissipated at equal rate so that the processor doesn’t meltdown. With every additional core that gets added there is a need to add more infrastructure to dissipate heat generated processor, which becomes unmanageable both from size and cost perspectives. This is when hardware geeks say we are done and we can’t improve processor to give more cycles because they are constrained by <strong>Laws of physics</strong>.</p>
+
+<p>Now it is up to the software pros, to show some skill. We&rsquo;ll come to skill part in a minute but before that do software programmers understand underlying hardware? Do they write hardware optimized code; I meant do they write programs that use all the cores that are given to them today? Good question, let me try out an example</p>
+
+<pre><code>namespace CompareTPL
+{
+    class Program
+    {        
+        static int addPara(int num)
+        {
+            int j = 0;
+            for (int i = 0; i &lt; 10000000; ++i)
+            {
+                 j = i * i;
+            }
+
+            return j;
+        }        
+
+        static void Main(string[] args)
+        {
+            for (int i = 0; i &lt; 1000; ++i)
+            {
+                addPara(5);
+            }            
+        }
+    }
+}
+</code></pre>
+
+<p>A simple for loop, which madly iterates over a large number and computes product of two numbers. When I run this program on an <strong>Intel I7 quadcore machine with 16GB RAM</strong>, what do I see in <a href="" title="https://msdn.microsoft.com/en-us/library/aa645516(v=vs.71).aspx">perfmon</a></p>
+
+<p><img src="/images/Seq_processing.jpg" alt="Sequential processing" /></p>
+
+<p>Histogram bars tell me that above program is not utilizing all cores efficiently and also the load is unevenly distributed. This means that above program will take longer time to execute.</p>
+
+<p>Now I’ll modify program to use multiple threads to achieve parallelism by replacing <strong>for</strong> with <strong>Parallel.For</strong></p>
+
+<pre><code>namespace CompareTPL
+{
+    class Program
+    {        
+        static int addPara(int num)
+        {
+            int j = 0;
+            for (int i = 0; i &lt; 10000000; ++i)
+            {
+                j = i * i;                
+            }
+
+            return j;
+        }        
+
+        static void Main(string[] args)
+        {
+
+            Parallel.For(0, 1000, i =&gt;
+            {
+                addPara(5);
+            });           
+        }
+    }
+}
+</code></pre>
+
+<p>Now what does <a href="" title="https://msdn.microsoft.com/en-us/library/aa645516(v=vs.71).aspx">perfmon</a> show</p>
+
+<p><img src="/images/Parallel_Processing.jpg" alt="Parallel processing" /></p>
+
+<p>Load is equally distributed among 4 cores and all cores are utilized to their maximum limit. This means the program will run faster. On my machine (<strong>Intel I7, 4 cores, 16GB RAM</strong>) it took 2.487 seconds to complete <strong>Parallel</strong> version and 5.320 seconds to complete <strong>simple for</strong> loop version. It tells me that using all cores effectively will execute program in less time. I’ve added <strong>.NetCLRLocksAndThreads</strong> counters to detect any contentions (in yellow) during execution of this program. Even though there are multiple threads executing same set of instructions there are no contentions reported.</p>
+
+<p>Let’s make this more interesting by replacing i*i with a console statement</p>
+
+<pre><code>class Program
+    {        
+        static int addPara(int num)
+        {
+            int j = 0;
+            for (int i = 0; i &lt; 10000000; ++i)
+            {
+                Console.WriteLine("Test Parallel");
+            }
+
+            return j;
+        }        
+
+        static void Main(string[] args)
+        {
+            Stopwatch s = new Stopwatch();
+            s.Start();
+            Parallel.For(0, 1000, i =&gt;
+            {
+                addPara(5);
+            });
+            s.Stop();
+            Console.WriteLine(s.ElapsedMilliseconds);
+        }
+    }
+} 
+</code></pre>
+
+<p>What do I see from perfmon now?
+Utilization of cores is 100% and load is evenly distributed among 4 cores.</p>
+
+<p><img src="/images/Contention.jpg" alt="Parallel processing With Contentions" /></p>
+
+<p>Total Number of contentions (Total # of Contentions) have gone up significantly and Contentions Rate Per Second has also gone up. Which resource is causing the contention? <strong>Console</strong>, yes console is the resource under contention. Only one thread can write to console at any moment. For writing to console, a thread has to request for lock on Console and wait until it gets lock. There are multiple threads waiting for the same lock/resource and this has a profound impact on performance and execution time.</p>
+
+<p>This means that threads created by <strong>Parallel.For</strong> are waiting for Console to write to it. The same program (with Console) takes more than 30 minutes to complete, which earlier took 2.487 seconds (with no console but multiplication of two numbers i*i). Locks and Contentions are very costly and can kill an application by choking the performance.</p>
+
+<p>Other kind of dependencies that slow down the application are</p>
+
+<pre><code>int op1 = a + b;
+int op2 = op1 + c;
+</code></pre>
+
+<p>In the above code fragment, second expression(<em>op1 + c</em>) cannot be executed until first expression(<em>op1 = a + b</em>) is executed because second expression needs result of first expression(op1) as input. This instruction level dependency clips compiler and forces it to generate sequential instructions which operating system cannot execute in parallel on available cores.</p>
+
+<p>These are the challenges that a hardware engineer cannot address and only software engineer can. No matter how many more cycles we add to processor we cannot improve program’s performance because there is a flaw in the program that is stopping it from being executed in parallel on available cores.</p>
+
+<p>From above examples, it is evident that we have enough processing power today to get things done decently fast and we are not writing programs to make full use of underlying processors. Hence I support hardware guys not adding any more cycles to processor because they already have added more cycles than what a fairly complex program needs.</p>
+
+<p>The point I was trying to explain is that no matter how much parallelism we introduce if there is a contention for resource we’ll not reap benefits.
+To conclude, I’ll summarize things that one needs to remember when introducing parallelism to gain performance</p>
+
+<ul>
+<li><p>Today’s Processors and Operating systems are smart enough to distribute load evenly among to all available cores.</p></li>
+<li><p>Programmer has to make sure that all threads or tasks that he/she are introducing are fairly independent so that there are no contentions. This will allow compiler to break instructions into independent instructions which Operating System can execute in parallel on different cores.</p></li>
+<li><p>Deploying an under-performing application on a multi-core platform will not improve performance beyond certain limit. Application has to go through refactoring to reap maximum benefits of multi-core platforms on which it is deployed.</p></li>
+<li><p>Look into Contentions and processor utilization from Perfmon to evaluate your program’s performance. If you notice contentions or underutilization of available processor cores, then focus on refactoring code.</p></li>
+</ul>
+
+
+<p>In next blog I’ll try to explain differences between Parallel and Asynchronous programming; and also explain when to use which paradigm.</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header class="page-header">
+    
+      <h1 class="entry-title"><a href="/blog/2015/07/11/azure-scheduler-can-post-to-azure-service-bus-queue-and-topic/">Azure Scheduler Can Post to Azure Service Bus Queue and Topic</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-07-11T00:23:09+05:30'><span class='date'><span class='date-month'>Jul</span> <span class='date-day'>11</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>12:23 am</span></time>
+        
+         | <a href="/blog/2015/07/11/azure-scheduler-can-post-to-azure-service-bus-queue-and-topic/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Azure Scheduler today doesn’t allow submitting long running jobs to Service bus queues/topics but does allow submitting them to storage queues. What if, there is a requirement to submit jobs to service bus queues/topics so that features like duplicate detection can be leveraged to eliminate duplicate jobs from getting executed. One can submit messages to Service bus queue from Scheduler dashboard using REST APIs. Here is how we do it</p>
+
+<p><img src="/images/SB.jpg" alt="Job Action" /></p>
+
+<p>Select <strong>Post</strong> method in Scheduler Job dashboard, which displays above template. URI will represent Queue or Topic where ever we want to send message. URI template for Service bus would be <em>http{s}://{serviceNamespace}.servicebus.windows.net/{queuePath|topicPath}/messages</em></p>
+
+<p>we can add timeout for POST request by appending timeout at the end of Uri. POST Uri with timeout will be <em>http{s}://{serviceNamespace}.servicebus.windows.net/{queuePath|topicPath}/messages?timeout=</em></p>
+
+<p><strong>example</strong>: <em>http{s}://{serviceNamespace}.servicebus.windows.net/{queuePath|topicPath}/messages?timeout=60</em></p>
+
+<p><strong>BrokerProperties</strong> allows one to set properties like TimeToLive, MessageId, Label etc… These properties have to beaded in Json format and this is mandatory</p>
+
+<p><strong>Authorization</strong> property is used to define AccessToken.</p>
+
+<p><strong>Content-Type</strong> value can be anything but it is mandatory to have this parameter added to header.</p>
+
+<p>When Scheduler executes the job, a message will be posted to Service Bus Queue or Topic. In Service Bus Explorer screen snapshot below, we can see properties that we set while creating the job
+<img src="/images/SBExp.jpg" alt="Service Bus Explorer" /></p>
+
+<p>You can do this from code as well and below is the sample</p>
+
+<pre><code>    using System;
+    using Microsoft.WindowsAzure.Scheduler;
+    using Microsoft.Azure;
+    using Microsoft.WindowsAzure.Scheduler.Models;
+    using Microsoft.WindowsAzure.Management.Scheduler;
+
+    namespace SchedulerFault
+    {
+        public class Scheduler
+        {
+            private SchedulerClient SchdClient;
+            SubscriptionCloudCredentials credentials;
+            public Scheduler(SubscriptionCloudCredentials creds)
+            {
+                credentials = creds;
+                SchdClient = new SchedulerClient("&lt;Scheduler Service&gt;", "Job Collection Name", credentials);                
+            }
+
+            public void inject()
+            {
+                var Request = new JobHttpRequest(new Uri(@"&lt;Topic/Queue URI&gt;?timeout=60"), "POST");
+                Request.Body = "Test Newton Properties";
+                Request.Headers.Add("BrokerProperties", "{\"Label\":\"M2\", \"MessageId\":\"Id1\"}");
+                Request.Headers.Add("Content-Type","application/xml");
+                Request.Headers.Add("Authorization", "&lt;Access Token&gt;");
+
+                var StartTime = DateTime.Now;
+                var Recurrence = new JobRecurrence()
+                {
+                    Frequency = JobRecurrenceFrequency.Minute,
+                    Interval = 1,
+                    Count = 5
+                };
+                var Action = new JobAction();
+                Action.Type = JobActionType.Http;
+                Action.Request = Request;
+                var jobParam = new JobCreateParameters();
+                jobParam.Action = Action;
+                jobParam.Recurrence = Recurrence;
+                jobParam.StartTime = StartTime;
+
+                try
+                {
+                    var Response = SchdClient.Jobs.Create(jobParam);
+                    Console.WriteLine(Response.RequestId);
+                    Console.WriteLine(Response.StatusCode);
+                    Console.WriteLine(Response.Job.Id);
+                }
+                catch(Exception ex)
+                {
+                    Console.WriteLine(ex.Message);            
+                }            
+            }
+        }
+    }
+</code></pre>
+
+<p>We need to install Microsoft WindowsAzure Management Scheduler Nuget package has necessary SDK for managing Scheduler and jobs in it.</p>
+
+<p>Scheduler service name(first parameter for SchedulerClient constructor) can be obtained from Scheduler dashboard or it follows following format <strong>CS-RegionName-scheduler</strong>. If scheduler is created int Southeast Asia then Service name will be <strong>CS-SoutheastAsia-scheduler</strong>. If it is created in SouthCentralUS then service name will be <strong>CS-SouthCentralUS-scheduler</strong>.</p>
+
+<p>Job Collection name(second parameter for SchedulerClient constructor) is a container in which Job will be created.</p>
+
+<p>Simple aah, If anyone says to you that Azure Scheduler cannot submit messages to Service Bus topic or queue then you know what to say and where to re-direct them.</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header class="page-header">
+    
+      <h1 class="entry-title"><a href="/blog/2015/07/02/azure-service-bus-partition-queues-and-topics-are-they-different/">Azure Service Bus Partition Queues and Topics? Are They Different?</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-07-02T23:51:46+05:30'><span class='date'><span class='date-month'>Jul</span> <span class='date-day'>2</span><span class='date-suffix'>nd</span>, <span class='date-year'>2015</span></span> <span class='time'>11:51 pm</span></time>
+        
+         | <a href="/blog/2015/07/02/azure-service-bus-partition-queues-and-topics-are-they-different/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Queues/Topics have been there for longtime and everyone thinks they know everything about them. I would park that discussion for later date and discuss about partitioning, which was introduced as an add-on capability to these services.</p>
+
+<p>In a normal service bus queue/topic there is only message store powered by SQL to store messages. If this message store is not reachable for any reason then entire queue/topic is unavailable. Throughput of queue/topic is limited by this single message store, which more often than not is a bottleneck.</p>
+
+<p>In partitioned queue/topic there are multiple message stores (also called as partition) and, read and write requests are catered by different partitions, which will reduce contention. If a client is writing a message to queue and another client is reading from queue these two operations can happen on two different partitions. This isolation gives boost to performance and improves overall throughput.</p>
+
+<p><em>Behind the scenes</em>
+Partitioned queues/topics can be created by enabling a checkbox box in configure queue/topic dialog. By default partitioning is enabled and below screenshots show how to enable/disable partitioning.</p>
+
+<p><strong>Create Queue</strong>
+<img src="/images/basic.jpg" alt="Create Queue" /></p>
+
+<p><strong>Configure Queue</strong>
+<img src="/images/part.jpg" alt="Configure Queue" /></p>
+
+<p><strong>Queue summary</strong>
+<img src="/images/qsummary.jpg" alt="Queue summary" /></p>
+
+<p>In the above screenshots, you can see I mentioned queue size (Max Size) as 1 GB but queue 16 GB queue is created? What could have happened? When partitioning is enabled Azure creates 16 partitions or message stores at the backend, each partition is of the size, which was mentioned during create in configure queue dialog. In the above screenshot, I requested 1 GB queue and enabled partitioning so Azure created 16 partitions each of the size 1 GB (, which I mentioned during create). What if I mentioned 5 GB as queue size during create, I get 80 GB queue (16 partitions each of 5 GB size).</p>
+
+<p>Additional space is fine but how does it impact my reads and writes? As shown in diagram below (for simplicity only 3 partitions are shown), 9 messages (Msg 1 thru Msg 9) are sent to queue and queue internally uses round robin algorithm to send messages into partitions. If there is one receiver reading messages from queue, messages are picked from partitions at random. If we abandon a message after reading it then the message goes back to partition from which it was picked and also doesn’t break sequence in that partition. For example, if we pick Msg 5 in partition 2 and then abandon it, it will still be second message in partition 2. But when next receive call is made by receiver, queue can return message from any partition (could also be Msg 5 again). This can break sequential processing because we are expecting Msg 5 (which will always be the case if the queue doesn’t have partitions) and with partitions there is no gurantee that Msg 5 will be returned.</p>
+
+<p><strong>Message selection</strong>
+<img src="/images/process.jpg" alt="Message selection" /></p>
+
+<p>If a partition is unavailable when a client is writing a message into it then queue will send message to next available partition. While reading, message from available partition is returned so there is no wait time like it is in single partition queue and will improve performance. Client application is abstracted from this entire process of partition selection. To enable high availability for queues/topics during local failures it is advised to turn-on partitions during their creation. <em>If sequential processing is a hard requirement then don’t turn-on partitioning</em>.</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header class="page-header">
+    
+      <h1 class="entry-title"><a href="/blog/2015/06/18/nuances-of-azure-event-hubs/">Nuances of Azure Event Hubs</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-06-18T22:43:27+05:30'><span class='date'><span class='date-month'>Jun</span> <span class='date-day'>18</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>10:43 pm</span></time>
+        
+         | <a href="/blog/2015/06/18/nuances-of-azure-event-hubs/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Event Hub, Microsoft’s PaaS offering to accept millions of events per second is built to handle traffic for Internet of Things scenarios. It (Event Hub) is an offshoot of Partitioned queues/topics and leverages same partitioning strategy. I know you would ask, why does Event Hub scale and Queues/Topics don’t? To achieve scale certain features like session based messaging, TTL were let go in Event Hub, which makes it light-weight and achieve the scale.</p>
+
+<p>In this post I’ll not be writing about Event Hubs functionality, which is available on <a href="http://azure.microsoft.com/en-in/services/event-hubs/">MSDN</a> instead I’ll be sharing subtle aspects which are important to know while using Event Hubs.</p>
+
+<p>Event hub speed is measured in Throughput Units (TPU), which defines the maximum event rate (ingress and egress) i.e., 1 Throughput unit equals to 1 MB/sec ingress and 2MB/sec egress and 2 Throughput units equals to 2 MB/sec ingress and 4MB/sec egress and so on.</p>
+
+<p>Event Hubs are designed for downstream parallelism which is why egress rate is double that of Ingress. To understand this better let’s do some math</p>
+
+<p>Ingress rate per partition => (TPU / No of Partitions)</p>
+
+<p>Egress rate per partition => ((TPU * 2) / No of Partitions); Egress is twice of Ingress for TPU</p>
+
+<table>
+<thead>
+<tr>
+<th style="text-align:center;">         TPU  </th>
+<th style="text-align:center;">        Partitions </th>
+<th style="text-align:center;">            Ingress            </th>
+<th style="text-align:right;">          Egress            </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center;">          1   </td>
+<td style="text-align:center;">        8          </td>
+<td style="text-align:center;">     0.125 MB/Sec (=> 1/8)     </td>
+<td style="text-align:right;">  0.25 MB/Sec (=> 2/8)      </td>
+</tr>
+<tr>
+<td style="text-align:center;">          2   </td>
+<td style="text-align:center;">        8          </td>
+<td style="text-align:center;">     0.250 MB/Sec (=> 2/8)     </td>
+<td style="text-align:right;">  0.50 MB/Sec (=> 4/8)      </td>
+</tr>
+<tr>
+<td style="text-align:center;">          1   </td>
+<td style="text-align:center;">       32          </td>
+<td style="text-align:center;">     0.03125 MB/Sec (=> 1/32)  </td>
+<td style="text-align:right;">  0.0625 MB/Sec (=> 2/32)   </td>
+</tr>
+<tr>
+<td style="text-align:center;">          2   </td>
+<td style="text-align:center;">       32          </td>
+<td style="text-align:center;">     0.0625 MB/Sec (=> 2/32)   </td>
+<td style="text-align:right;">  0.125 MB/Sec (=> 4/32)    </td>
+</tr>
+</tbody>
+</table>
+
+
+<p> <strong>TPU</strong> - <em>No of Throughput Units</em></p>
+
+<p><strong>Partitions</strong> - <em>Eventhub partitions</em></p>
+
+<p><strong>Ingress</strong> - <em>Ingress rate per partition (MB/Sec)</em></p>
+
+<p><strong>Egress</strong> - <em>Egress rate per partition (MB/Sec)</em></p>
+
+<p>For example, if user selects 1 TPU and 8 partitions and all partitions see even load, each partition gets approximately <em>0.125 MB/Sec</em> ingress throughput for a total aggregate throughput of 1 MB/Sec(8 x 0.125) and if user selects 2 TPU and 8 partitions, each partition gets approximately <em>0.25 MB/Sec</em> (8 x 0.25).</p>
+
+<p>However there is cap on maximum ingress and egress that a partition can deliver, which is 1 MB/sec ingress and 2MB/Sec Egress. For instance, I choose 2 TPUs and 8 Partitions for an Event Hub, and one partition is receiving all of traffic and other partitions are sitting idle. When this partition receives more than 1MB/Sec it starts throttling and doesn’t matter if maximum traffic that Event Hub with 2 TPUs can take is 2MB/Sec.</p>
+
+<p>To summarize, irrespective of load patterns of individual partitions and maximum throughput defined by TPUs selected, <em>a partition cannot take more than 1 MB/Sec ingress</em>.</p>
+
+<p>Let’s say user selects 8 partitions and 10 TPUs for an Event Hub; total ingress that it can support is 10 MB/Sec which means in case of even load distribution each partition will receive 1.25 MB/Sec. How?</p>
+
+<p>=> Each TPU guarantees 1MB/Sec Ingress</p>
+
+<p>=> 10 TPUs will deliver 10 * 1 MB/Sec, which is 10 MB/Sec</p>
+
+<p>=> Total number of partitions to cater traffic is 8</p>
+
+<p>=> Even distribution means 10 MB per Sec/ 8 Partitions, which is 1.25 MB/Sec per Partition</p>
+
+<p>But there is cap on maximum throughput for a partition, which is 1MB/Sec. What does this imply? This means that partitions will throttle if Event Hub is operating at its full capacity. This brings us to most important decision point, Number of Partitions and TPUs have to be selected together and after evaluating load patterns. Event Hub allows changing TPUs anytime but not partitions. Once allocated partitions cannot be increased or decreased and to alter their count Event hub has to be recreated.</p>
+
+<p>Too many parameters to consider aren’t they; let me make it simple with an example. I’ve a scenario where peak traffic volume is 2,000 transactions/Second and each transaction(message) is of size 15 KB. Net volume that Event Hub will have to deal with is</p>
+
+<p>=> 2,000 * 15 KB => 30,000 KB/Sec => 30 MB/Sec (for simplicity 1 MB = 1000 KB)</p>
+
+<p>I choose to have 8 partitions and in the case of even load distribution each partition will receive</p>
+
+<p>=> 30 MB per Sec / 8 Partitions => 3.75 MB/Sec per Partition, which is way more than maximum ingress rate of a partition (1 MB/sec). 8 partitions Event Hub will throttle for above scenario.</p>
+
+<p>Now I configure 32 partitions and in the case of even load distribution each partition will receive</p>
+
+<p>=> 30 MB per Sec / 32 partitions => 0.9375 MB/Sec per Partition, which is less than maximum ingress rate of a partition (1 MB/sec). 32 partitions will cater my requirement (2000 transactions per Sec, each transaction is of 15 KB size) without throttling.</p>
+
+<p>Azure portal allows user to create maximum of 32 partitions and provision upto 20 TPUs. If user requires more throughput units (<em>partitions implied</em>) he/she should contact <a href="http://azure.microsoft.com/en-in/support/options/">Azure support</a>.</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header class="page-header">
+    
+      <h1 class="entry-title"><a href="/blog/2015/06/04/Singularity_of_Software_Development/">Singularity of Software Development</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-06-04T23:48:23+05:30'><span class='date'><span class='date-month'>Jun</span> <span class='date-day'>4</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>11:48 pm</span></time>
+        
+         | <a href="/blog/2015/06/04/Singularity_of_Software_Development/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><em>A physician, a civil engineer, and a computer scientist were arguing about what was the oldest profession in the world. The physician remarked, “Well, in the Bible, it says that God created Eve from a rib taken out of Adam. This clearly required surgery, and so I can rightly claim that mine is the oldest profession in the world.” The civil engineer interrupted, and said, “But even earlier in the book of Genesis, it states that God created the order of the heavens and the earth from out of the chaos. This was the first and certainly the most spectacular application of civil engineering. Therefore, fair doctor, you are wrong: mine is the oldest profession in the world.” The computer scientist leaned back in her chair, smiled, and then said confidently, “Ah, but who do you think created the chaos?”</em></p>
+
+<p>One prime (not the only) reason for the chaos is rigidity of software architecture and design, by rigidity I meant how easy or hard is it to replace an existing algorithm or a feature or a component with a new and better one. If a component can be replaced with a better one, like replace one caching strategy with other, RDBMS with NoSQL without having to refactor entire code base then design/architecture can be called flexible or stable. But how many times changes like these are contained to a class or two.</p>
+
+<p>In present world where there are millions of software developers connected through internet and in the virtual company of Uncle Bob, Martin Fowler, Mark Seemann and a long list of craftsmen we still see software projects with rigid architectures and bad code. Why do these happen?</p>
+
+<p>In Ramayan, Sita asks Ravana</p>
+
+<h4>इह सन्तो न वा सन्ति सतो वा नानुवर्तसे |</h4>
+
+<h4>तथाहि विपरीता ते बुद्धिराचारवर्जिता ||</h4>
+
+<p>Which roughly translates to “Is there no learned person in Lanka who can preach you righteous behavior or is it that he/she preaches and you don’t listen!!! Where is the problem?”</p>
+
+<p>This dialogue between Sita and Ravana suits software professionals more than any other. There are myriad of articles, books, videos on OOAD, SOLID principles and, Patterns and Practices by renowned software professionals that will help in building optimal designs and architecture. But good designs and code are rare sightings. One reason for current status quo, is that engineers and architects spend good amount of time debating about current and upcoming features and creating architecture and designs for present and future needs. Outcome of these discussions is, bring things together, which should never have been together, like employee and his/her reporting functionalities. This coupling leads to rigidity and software becomes unmanageable. “Change is inevitable” this is undeniable truth that history, software craftsmen and all resources on the internet have been saying and engineers have been ignoring.</p>
+
+<p>To avoid these familiar situations in the future, every software professional should ask oneself following set of questions before proposing and finalizing an architecture and design</p>
+
+<ul>
+<li><p>How will my architecture/design handle change?</p></li>
+<li><p>How many components/modules will be affected if I’ve to replace a component with another. For instance, if we are changing message tracking functionality will alerting be impacted? How will I manage changes to tracking without affecting alerting?</p></li>
+<li><p>Am I designing for the exact customer requirements or am I over-designing assuming that customer will have additional requirements in future?</p></li>
+<li><p>How will I unit-test my code?</p></li>
+<li><p>If I’ve to make changes to my code do I have unit-tests to check if I broke any existing functionality?</p></li>
+<li><p>Am I taking any direct dependency on external components like using stored procedures in my class functions.</p></li>
+</ul>
+
+
+<p>As long as we are designing for present and not future and ensuring that coupling is minimal, chaos can be managed and reduced. Take care of present, future will take care of itself This discussion is more relevant in the age of cloud computing than before because proliferation of new SaaS and PaaS services with competitive pricing models and the need to stay competitive has put us under tremendous pressure. We have to choose right services and replace existing services without major downtime and maintenance. If we are tightly coupled to existing services and their interfaces then any change in existing interfaces or strategy can potentially put one out-of-business.</p>
+
+<p>To conclude, it is not anymore about right and perfect architectures and designs it is all about optimal architectures and designs, which can meet customer needs at that point of time and can co-evolve with customer business strategy. This is because, software is no more a tactical investment it is strategical advantage for organizations and strategies are influenced by many external factors which are beyond developers span of control and all developers can do is keep their designs open for changes.</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  <ul class="pager">
+    
+    <li><a href="/blog/archives">Blog Archives</a></li>
+    
+  </ul>
+</div>
+<aside class="sidebar-nav span3">
+  
+    <section class="well">
+  <ul id="recent_posts" class="nav nav-list">
+    <li class="nav-header">Recent Posts</li>
+    
+      <li class="post">
+        <a href="/blog/2015/08/10/parallelism-on-multi-core-processors-continuation/">Parallelism on Multi-core Processors: continuation</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/08/04/parallelism-on-multi-core-processors/">Parallelism on Multi-core processors</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/07/11/azure-scheduler-can-post-to-azure-service-bus-queue-and-topic/">Azure Scheduler can post to Azure Service Bus Queue and Topic</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/07/02/azure-service-bus-partition-queues-and-topics-are-they-different/">Azure Service Bus Partition Queues and Topics? Are they different?</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/06/18/nuances-of-azure-event-hubs/">Nuances of Azure Event Hubs</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section class="well">
+  <ul id="gh_repos" class="nav">
+    <li class="nav-header">GitHub Repos</li>
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/Prasad-Pillutla">@Prasad-Pillutla</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        github.showRepos({
+            user: 'Prasad-Pillutla',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/asides/github.js" type="text/javascript"> </script>
+</section>
+
+
+<section>
+  <h1>On Delicious</h1>
+  <div id="delicious"></div>
+  <script type="text/javascript" src="http://feeds.delicious.com/v2/json/prasadpillutla?count=3&amp;sort=date&amp;callback=renderDeliciousLinks"></script>
+  <p><a href="http://delicious.com/prasadpillutla">My Delicious Bookmarks &raquo;</a></p>
+</section>
+
+
+
+
+  
+</aside>
+
+    </div>
+  </div>
+  <footer role="contentinfo" class="page-footer"><hr>
+<p>
+  Copyright &copy; 2015 - Prasad -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'prasadthinkcom';
+      
+        
+        var disqus_script = 'count.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>
