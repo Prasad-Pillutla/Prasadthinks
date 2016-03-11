@@ -2,10 +2,10 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 
   <title><![CDATA[Category: software | Prasad Thinks]]></title>
-  <link href="http://prasad-pillutla.github.io/blog/categories/software/atom.xml" rel="self"/>
-  <link href="http://prasad-pillutla.github.io/"/>
-  <updated>2016-03-11T15:22:13+00:00</updated>
-  <id>http://prasad-pillutla.github.io/</id>
+  <link href="http://prasad-pillutla.github.io/prasadthinks/blog/categories/software/atom.xml" rel="self"/>
+  <link href="http://prasad-pillutla.github.io/prasadthinks/"/>
+  <updated>2016-03-11T16:24:36+00:00</updated>
+  <id>http://prasad-pillutla.github.io/prasadthinks/</id>
   <author>
     <name><![CDATA[Prasad]]></name>
     <email><![CDATA[Prasad.pillu@gmail.com]]></email>
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[Singularity of Software Development]]></title>
-    <link href="http://prasad-pillutla.github.io/blog/2015/06/04/Singularity_of_Software_Development/"/>
+    <link href="http://prasad-pillutla.github.io/prasadthinks/blog/2015/06/04/Singularity_of_Software_Development/"/>
     <updated>2015-06-04T18:18:23+00:00</updated>
-    <id>http://prasad-pillutla.github.io/blog/2015/06/04/Singularity_of_Software_Development</id>
+    <id>http://prasad-pillutla.github.io/prasadthinks/blog/2015/06/04/Singularity_of_Software_Development</id>
     <content type="html"><![CDATA[<p><em>A physician, a civil engineer, and a computer scientist were arguing about what was the oldest profession in the world. The physician remarked, “Well, in the Bible, it says that God created Eve from a rib taken out of Adam. This clearly required surgery, and so I can rightly claim that mine is the oldest profession in the world.” The civil engineer interrupted, and said, “But even earlier in the book of Genesis, it states that God created the order of the heavens and the earth from out of the chaos. This was the first and certainly the most spectacular application of civil engineering. Therefore, fair doctor, you are wrong: mine is the oldest profession in the world.” The computer scientist leaned back in her chair, smiled, and then said confidently, “Ah, but who do you think created the chaos?”</em></p>
 
 <p>One prime (not the only) reason for the chaos is rigidity of software architecture and design, by rigidity I meant how easy or hard is it to replace an existing algorithm or a feature or a component with a new and better one. If a component can be replaced with a better one, like replace one caching strategy with other, RDBMS with NoSQL without having to refactor entire code base then design/architecture can be called flexible or stable. But how many times changes like these are contained to a class or two.</p>

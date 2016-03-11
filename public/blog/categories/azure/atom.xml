@@ -2,10 +2,10 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 
   <title><![CDATA[Category: azure, | Prasad Thinks]]></title>
-  <link href="http://prasad-pillutla.github.io/blog/categories/azure/atom.xml" rel="self"/>
-  <link href="http://prasad-pillutla.github.io/"/>
-  <updated>2016-03-11T15:22:13+00:00</updated>
-  <id>http://prasad-pillutla.github.io/</id>
+  <link href="http://prasad-pillutla.github.io/prasadthinks/blog/categories/azure/atom.xml" rel="self"/>
+  <link href="http://prasad-pillutla.github.io/prasadthinks/"/>
+  <updated>2016-03-11T16:24:36+00:00</updated>
+  <id>http://prasad-pillutla.github.io/prasadthinks/</id>
   <author>
     <name><![CDATA[Prasad]]></name>
     <email><![CDATA[Prasad.pillu@gmail.com]]></email>
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[Azure Scheduler can post to Azure Service Bus Queue and Topic]]></title>
-    <link href="http://prasad-pillutla.github.io/blog/2015/07/10/azure-scheduler-can-post-to-azure-service-bus-queue-and-topic/"/>
+    <link href="http://prasad-pillutla.github.io/prasadthinks/blog/2015/07/10/azure-scheduler-can-post-to-azure-service-bus-queue-and-topic/"/>
     <updated>2015-07-10T18:53:09+00:00</updated>
-    <id>http://prasad-pillutla.github.io/blog/2015/07/10/azure-scheduler-can-post-to-azure-service-bus-queue-and-topic</id>
+    <id>http://prasad-pillutla.github.io/prasadthinks/blog/2015/07/10/azure-scheduler-can-post-to-azure-service-bus-queue-and-topic</id>
     <content type="html"><![CDATA[<p>Azure Scheduler today doesn’t allow submitting long running jobs to Service bus queues/topics but does allow submitting them to storage queues. What if, there is a requirement to submit jobs to service bus queues/topics so that features like duplicate detection can be leveraged to eliminate duplicate jobs from getting executed. One can submit messages to Service bus queue from Scheduler dashboard using REST APIs. Here is how we do it</p>
 
 <p><img src="/images/SB.jpg" alt="Job Action" /></p>
@@ -108,9 +108,9 @@
   
   <entry>
     <title type="html"><![CDATA[Azure Service Bus Partition Queues and Topics? Are they different?]]></title>
-    <link href="http://prasad-pillutla.github.io/blog/2015/07/02/azure-service-bus-partition-queues-and-topics-are-they-different/"/>
+    <link href="http://prasad-pillutla.github.io/prasadthinks/blog/2015/07/02/azure-service-bus-partition-queues-and-topics-are-they-different/"/>
     <updated>2015-07-02T18:21:46+00:00</updated>
-    <id>http://prasad-pillutla.github.io/blog/2015/07/02/azure-service-bus-partition-queues-and-topics-are-they-different</id>
+    <id>http://prasad-pillutla.github.io/prasadthinks/blog/2015/07/02/azure-service-bus-partition-queues-and-topics-are-they-different</id>
     <content type="html"><![CDATA[<p>Queues/Topics have been there for longtime and everyone thinks they know everything about them. I would park that discussion for later date and discuss about partitioning, which was introduced as an add-on capability to these services.</p>
 
 <p>In a normal service bus queue/topic there is only message store powered by SQL to store messages. If this message store is not reachable for any reason then entire queue/topic is unavailable. Throughput of queue/topic is limited by this single message store, which more often than not is a bottleneck.</p>
@@ -142,9 +142,9 @@ Partitioned queues/topics can be created by enabling a checkbox box in configure
   
   <entry>
     <title type="html"><![CDATA[Nuances of Azure Event Hubs]]></title>
-    <link href="http://prasad-pillutla.github.io/blog/2015/06/18/nuances-of-azure-event-hubs/"/>
+    <link href="http://prasad-pillutla.github.io/prasadthinks/blog/2015/06/18/nuances-of-azure-event-hubs/"/>
     <updated>2015-06-18T17:13:27+00:00</updated>
-    <id>http://prasad-pillutla.github.io/blog/2015/06/18/nuances-of-azure-event-hubs</id>
+    <id>http://prasad-pillutla.github.io/prasadthinks/blog/2015/06/18/nuances-of-azure-event-hubs</id>
     <content type="html"><![CDATA[<p>Event Hub, Microsoft’s PaaS offering to accept millions of events per second is built to handle traffic for Internet of Things scenarios. It (Event Hub) is an offshoot of Partitioned queues/topics and leverages same partitioning strategy. I know you would ask, why does Event Hub scale and Queues/Topics don’t? To achieve scale certain features like session based messaging, TTL were let go in Event Hub, which makes it light-weight and achieve the scale.</p>
 
 <p>In this post I’ll not be writing about Event Hubs functionality, which is available on <a href="http://azure.microsoft.com/en-in/services/event-hubs/">MSDN</a> instead I’ll be sharing subtle aspects which are important to know while using Event Hubs.</p>
