@@ -4,7 +4,7 @@
   <title><![CDATA[Category: machine | Prasad Thinks]]></title>
   <link href="http://prasad-pillutla.github.io/Prasadthinks/blog/categories/machine/atom.xml" rel="self"/>
   <link href="http://prasad-pillutla.github.io/Prasadthinks/"/>
-  <updated>2016-09-08T18:11:51+00:00</updated>
+  <updated>2016-09-08T20:24:39+00:00</updated>
   <id>http://prasad-pillutla.github.io/Prasadthinks/</id>
   <author>
     <name><![CDATA[Prasad]]></name>
@@ -30,8 +30,9 @@
 
 <p>There are situations when developers want their custom chat clients to interact with Chatbots and integration with custom chat clients is made possible by <a href="https://docs.botframework.com/en-us/restapi/directline/">DirectLine API</a>. Chatbot integration with custom chat clients is a challenge as there is little or no documentation and no samples available for reference. In this article I would using <a href="http://www.telerik.com/fiddler">fiddler</a> to demonstrate Chatbot integration with custom chat clients. Let’s get started</p>
 
-<p><strong>Step 1: Enable DirectLine API</strong>
-Login into your <a href="https://dev.botframework.com/">bot dashboard</a> using Microsoft Live ID. Once you register your bot you’ll supported channels.In the list of channels <strong><em>Add Direct Line</em></strong> channel.</p>
+<p><strong>Step 1: Enable DirectLine API</strong></p>
+
+<p>Login into your <a href="https://dev.botframework.com/">bot dashboard</a> using Microsoft Live ID. Once you register your bot you’ll supported channels.In the list of channels <strong><em>Add Direct Line</em></strong> channel.</p>
 
 <p><img src="/images/enableDirectLine.jpg" alt="" /></p>
 
@@ -41,19 +42,28 @@ Login into your <a href="https://dev.botframework.com/">bot dashboard</a> using 
 
 <p><strong>Step 2: Use Fiddler to communicate with the Chatbot hosted on Azure</strong></p>
 
-<p><strong><em>Step 2.1: Initiate communication with Chatbot</em></strong>
-Any custom chat client should start its interaction with Chatbot by posting message to <a href="https://directline.botframework.com/api/conversations"></a>. Header of the POST message should have Authorization parameter, which take Direct Line secret generated in Step 1<br/>
-Authorization: BotConnector <strong><em><Direct Line secret></em></strong>
-Above request returns with <strong>return code 200</strong> and conversation id, like below</p>
+<p><strong><em>Step 2.1: Initiate communication with Chatbot</em></strong></p>
+
+<p>Any custom chat client should start its interaction with Chatbot by posting message to &ldquo;<a href="https://directline.botframework.com/api/conversations">https://directline.botframework.com/api/conversations</a>&rdquo;</p>
+
+<p>Header of the POST message should have Authorization parameter, which take Direct Linesecret generated in Step 1</p>
+
+<pre><code>Authorization: BotConnector &lt;Direct Line secret&gt;
+</code></pre>
+
+<p>Above request returns with <strong>return code 200</strong> and conversation id, like below</p>
 
 <p><img src="/images/Post%201.jpg" alt="" /></p>
 
+<p><img src="/images/Post%201%20response.jpg" alt="" /></p>
+
 <p><strong>Note</strong> conversationId. This token/conversationId is <strong><em>valid only for 30 minutes</em></strong></p>
 
-<p><strong><em>Step 2.2: POST message to Chatbot</em></strong>
-Using the conversationId we can POST any number of messages to Chatbot. All messages to Chatbot will be posted to a new URL, which is <a href="https://directline.botframework.com/api/conversations/&lt;ConversationId>/messages"></a>, in this example the POST request will be sent to</p>
+<p><strong><em>Step 2.2: POST message to Chatbot</em></strong></p>
 
-<p><a href="https://directline.botframework.com/api/conversations/Jk21ZkYRQ6a/messages"></a></p>
+<p>Using the conversationId we can POST any number of messages to Chatbot. All messages to Chatbot will be posted to a new URL, which is <em>&ldquo;<a href="https://directline.botframework.com/api/conversations/">https://directline.botframework.com/api/conversations/</a><ConversationId>/messages&rdquo;</em>, in this example the POST request will be sent to</p>
+
+<p>&ldquo;<a href="https://directline.botframework.com/api/conversations/Jk21ZkYRQ6a/messages">https://directline.botframework.com/api/conversations/Jk21ZkYRQ6a/messages</a>&rdquo;</p>
 
 <pre><code>Request Body will be in the format below
 {
@@ -65,13 +75,13 @@ Using the conversationId we can POST any number of messages to Chatbot. All mess
 
 <p>Above request doesn’t have a response body and <strong>return Code will be 204</strong>.</p>
 
-<p><img src="/images/Post%201%20response.jpg" alt="" /></p>
+<p><strong><em>Content-type</em></strong> must be sent in header. Without Content-type in header, Chat Client cannot post message to Chatbot.</p>
 
 <p><strong><em>Step 2.3: Retrieve Chatbot&rsquo;s response for the message sent</em></strong></p>
 
 <p>Above request doesn’t return response from Bot. To view responses from Bot we need to perform a GET request on same URI to which we posted in <em>Step 2.2: POST message to Chatbot</em></p>
 
-<p>GET <a href="https://directline.botframework.com/api/conversations/Jk21ZkYRQ6a/messages"></a></p>
+<p>GET &ldquo;<a href="https://directline.botframework.com/api/conversations/Jk21ZkYRQ6a/messages">https://directline.botframework.com/api/conversations/Jk21ZkYRQ6a/messages</a>&rdquo;</p>
 
 <p>Response from bot is present in “text” field</p>
 

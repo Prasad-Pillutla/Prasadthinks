@@ -3,7 +3,7 @@ layout: post
 title: "Architect Attitude Architecture"
 date: 2016-04-27 18:15:38 +0000
 comments: true
-categories: 
+categories: Architecture
 ---
 When you ask two architects with similar experiences to define a system, they would approach and define it very differently. What distinguishes the two defined architectures?  and Why are they different? I think and believe, Software architecture should not be considered merely as a set of models or structures, but should include the **decisions** that lead to these particular structures, and the rationale behind them. 
 

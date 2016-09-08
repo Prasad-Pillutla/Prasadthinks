@@ -18,6 +18,7 @@ Once Chatbot is built and deployed, a client application is required using which
 There are situations when developers want their custom chat clients to interact with Chatbots and integration with custom chat clients is made possible by [DirectLine API](https://docs.botframework.com/en-us/restapi/directline/). Chatbot integration with custom chat clients is a challenge as there is little or no documentation and no samples available for reference. In this article I would using [fiddler](http://www.telerik.com/fiddler) to demonstrate Chatbot integration with custom chat clients. Let’s get started
 
 **Step 1: Enable DirectLine API** 
+
 Login into your [bot dashboard](https://dev.botframework.com/) using Microsoft Live ID. Once you register your bot you’ll supported channels.In the list of channels ***Add Direct Line*** channel.
 
 ![](/images/enableDirectLine.jpg)
@@ -29,18 +30,27 @@ When you select Add, a new browser tab will open up where you should **Check** _
 **Step 2: Use Fiddler to communicate with the Chatbot hosted on Azure**
 
 ***Step 2.1: Initiate communication with Chatbot***
-Any custom chat client should start its interaction with Chatbot by posting message to [](https://directline.botframework.com/api/conversations). Header of the POST message should have Authorization parameter, which take Direct Line secret generated in Step 1  
-Authorization: BotConnector ***<Direct Line secret>***
+
+Any custom chat client should start its interaction with Chatbot by posting message to "https://directline.botframework.com/api/conversations"
+
+Header of the POST message should have Authorization parameter, which take Direct Linesecret generated in Step 1
+
+    Authorization: BotConnector <Direct Line secret>
+
 Above request returns with **return code 200** and conversation id, like below
 
 ![](/images/Post 1.jpg)
 
+
+![](/images/Post 1 response.jpg)
+
 **Note** conversationId. This token/conversationId is ***valid only for 30 minutes***
 
 ***Step 2.2: POST message to Chatbot***
-Using the conversationId we can POST any number of messages to Chatbot. All messages to Chatbot will be posted to a new URL, which is [](https://directline.botframework.com/api/conversations/<ConversationId>/messages), in this example the POST request will be sent to 
 
-[](https://directline.botframework.com/api/conversations/Jk21ZkYRQ6a/messages)
+Using the conversationId we can POST any number of messages to Chatbot. All messages to Chatbot will be posted to a new URL, which is _"https://directline.botframework.com/api/conversations/<ConversationId>/messages"_, in this example the POST request will be sent to 
+
+"https://directline.botframework.com/api/conversations/Jk21ZkYRQ6a/messages"
 
     Request Body will be in the format below
     {
@@ -51,13 +61,14 @@ Using the conversationId we can POST any number of messages to Chatbot. All mess
 
 Above request doesn’t have a response body and **return Code will be 204**. 
 
-![](/images/Post 1 response.jpg)
+***Content-type*** must be sent in header. Without Content-type in header, Chat Client cannot post message to Chatbot.
+
 
 ***Step 2.3: Retrieve Chatbot's response for the message sent***
 
 Above request doesn’t return response from Bot. To view responses from Bot we need to perform a GET request on same URI to which we posted in _Step 2.2: POST message to Chatbot_
 
-GET [](https://directline.botframework.com/api/conversations/Jk21ZkYRQ6a/messages)
+GET "https://directline.botframework.com/api/conversations/Jk21ZkYRQ6a/messages"
 
 
 Response from bot is present in “text” field
