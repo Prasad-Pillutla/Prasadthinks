@@ -1,0 +1,367 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Chatbots - Integrating with your chat client - Prasad Thinks</title>
+  <meta name="author" content="Prasad">
+
+  
+  <meta name="description" content="">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://prasad-pillutla.github.io/Prasadthinks/blog/2016/09/08/chatbots-integrating-with-your-chat-client">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/bootstrap/bootstrap.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/stylesheets/bootstrap/responsive.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/stylesheets/syntax/syntax.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <style type="text/css">
+    body {
+      padding-bottom: 40px;
+    }
+    h1 {
+      margin-bottom: 15px;
+    }
+    img {
+      max-width: 100%;
+    }
+    .sharing, .meta, .pager {
+      margin: 20px 0px 20px 0px;
+    }
+    .page-footer p {
+      text-align: center;
+    }
+  </style>
+  <script src="/javascripts/libs/jquery.js"></script>
+  <script src="/javascripts/libs/modernizr-2.0.js"></script>
+  <script src="/javascripts/libs/bootstrap.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="http://feeds.feedburner.com/PrasadThinks" rel="alternate" title="Prasad Thinks" type="application/atom+xml">
+  
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-62377917-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <nav role="navigation"><div class="navbar navbar-inverse">
+  <div class="navbar-inner">
+    <div class="container">
+      <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </a>
+
+      <a class="brand" href="/">Prasad Thinks</a>
+
+      <div class="nav-collapse">
+        <ul class="nav">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/about">About</a></li>
+  <li><a href="/Portfolio">Portfolio</a></li>
+</ul>
+
+
+        <ul class="nav pull-right" data-subscription="rss">
+          <li><a href="http://feeds.feedburner.com/PrasadThinks" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+          
+        </ul>
+
+        
+          <form class="pull-right navbar-search" action="https://www.google.com/search" method="get">
+            <fieldset role="search">
+              <input type="hidden" name="q" value="site:prasad-pillutla.github.io/Prasadthinks" />
+              <input class="search-query" type="text" name="q" results="0" placeholder="Search"/>
+            </fieldset>
+          </form>
+        
+      </div>
+    </div>
+  </div>
+</div>
+</nav>
+  <div class="container">
+    <div class="row-fluid">
+      
+<article class="hentry span9" role="article">
+
+  
+  <header class="page-header">
+    
+      <h1 class="entry-title">Chatbots - Integrating With Your Chat Client</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-09-08T15:56:22+00:00'><span class='date'><span class='date-month'>Sep</span> <span class='date-day'>8</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>3:56 pm</span></time>
+        
+         | <a href="#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>Chatbot, software world’s new celebrity. What is it? As per Wikipedia</p>
+
+<p><em>A <strong>Chatbot</strong> (also known as a <strong>Talkbot</strong>, <strong>Chatterbot</strong>, <strong>Bot</strong>, <strong>Chatterbox</strong>, <strong>Artificial Conversational Entity</strong>) is a computer program designed to simulate an intelligent conversation with one or more human users via auditory or textual methods</em>.</p>
+
+<p>The way I see it (in over simplified statement), it is a <strong>Web Service</strong> powered by Natural Language Processing and, driven by BigData and Machine/Deep Learning.</p>
+
+<p>There are many frameworks available to build a Chatbot and of all, I chose <a href="https://dev.botframework.com/">Microsoft Bot Framework</a> for obvious reasons. There are good number of articles on how to build Chatbot using <a href="https://dev.botframework.com/">Microsoft Bot Framework</a> and deploy it on Azure, which I’ll not repeat.</p>
+
+<p>Once Chatbot is built and deployed, a client application is required using which users can communicate with it. Microsoft, provides Out-of-box integration with Skype and allows Chatbot developers to integrate their Chatbots with Facebook Messenger, WeChat and <a href="https://docs.botframework.com/en-us/csharp/builder/sdkreference/gettingstarted.html#channels">few others</a>.</p>
+
+<p>There are situations when developers want their custom chat clients to interact with Chatbots and integration with custom chat clients is made possible by <a href="https://docs.botframework.com/en-us/restapi/directline/">DirectLine API</a>. Chatbot integration with custom chat clients is a challenge as there is little or no documentation and no samples available for reference. In this article I would using <a href="http://www.telerik.com/fiddler">fiddler</a> to demonstrate Chatbot integration with custom chat clients. Let’s get started</p>
+
+<p><strong>Step 1: Enable DirectLine API</strong>
+Login into your <a href="https://dev.botframework.com/">bot dashboard</a> using Microsoft Live ID. Once you register your bot you’ll supported channels.In the list of channels <strong><em>Add Direct Line</em></strong> channel.</p>
+
+<p><img src="/images/enableDirectLine.jpg" alt="" /></p>
+
+<p>When you select Add, a new browser tab will open up where you should <strong>Check</strong> <em>“Enable this bot on Direct Line”</em> option. You should also generate Direct Line Secret by clicking <em>“Generate Direct Line secret button”</em>. Save generated secret for later use.</p>
+
+<p><img src="/images/AddDL.jpg" alt="" /></p>
+
+<p><strong>Step 2: Use Fiddler to communicate with the Chatbot hosted on Azure</strong></p>
+
+<p><strong><em>Step 2.1: Initiate communication with Chatbot</em></strong>
+Any custom chat client should start its interaction with Chatbot by posting message to <a href="https://directline.botframework.com/api/conversations"></a>. Header of the POST message should have Authorization parameter, which take Direct Line secret generated in Step 1<br/>
+Authorization: BotConnector <strong><em><Direct Line secret></em></strong>
+Above request returns with <strong>return code 200</strong> and conversation id, like below</p>
+
+<p><img src="/images/Post%201.jpg" alt="" /></p>
+
+<p><strong>Note</strong> conversationId. This token/conversationId is <strong><em>valid only for 30 minutes</em></strong></p>
+
+<p><strong><em>Step 2.2: POST message to Chatbot</em></strong>
+Using the conversationId we can POST any number of messages to Chatbot. All messages to Chatbot will be posted to a new URL, which is <a href="https://directline.botframework.com/api/conversations/&lt;ConversationId>/messages"></a>, in this example the POST request will be sent to</p>
+
+<p><a href="https://directline.botframework.com/api/conversations/Jk21ZkYRQ6a/messages"></a></p>
+
+<pre><code>Request Body will be in the format below
+{
+"text": “&lt;Your Message&gt;”
+}
+</code></pre>
+
+<p><img src="/images/Post%202.jpg" alt="" /></p>
+
+<p>Above request doesn’t have a response body and <strong>return Code will be 204</strong>.</p>
+
+<p><img src="/images/Post%201%20response.jpg" alt="" /></p>
+
+<p><strong><em>Step 2.3: Retrieve Chatbot&rsquo;s response for the message sent</em></strong></p>
+
+<p>Above request doesn’t return response from Bot. To view responses from Bot we need to perform a GET request on same URI to which we posted in <em>Step 2.2: POST message to Chatbot</em></p>
+
+<p>GET <a href="https://directline.botframework.com/api/conversations/Jk21ZkYRQ6a/messages"></a></p>
+
+<p>Response from bot is present in “text” field</p>
+
+<p><img src="/images/Get%20Message.jpg" alt="" /></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Prasad</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2016-09-08T15:56:22+00:00'><span class='date'><span class='date-month'>Sep</span> <span class='date-day'>8</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>3:56 pm</span></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/azure/'>azure</a>, <a class='category' href='/blog/categories/chatbots/'>chatbots,</a>, <a class='category' href='/blog/categories/learning/'>learning,</a>, <a class='category' href='/blog/categories/machine/'>machine</a>, <a class='category' href='/blog/categories/microsoft/'>microsoft</a>, <a class='category' href='/blog/categories/services/'>services,</a>, <a class='category' href='/blog/categories/web/'>web</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://prasad-pillutla.github.io/Prasadthinks/blog/2016/09/08/chatbots-integrating-with-your-chat-client/" data-via="prasad_pillu" data-counturl="http://prasad-pillutla.github.io/Prasadthinks/blog/2016/09/08/chatbots-integrating-with-your-chat-client/" >Tweet</a>
+  
+  
+  
+    <div class="fb-like" data-send="true" data-width="450" data-show-faces="false"></div>
+  
+</div>
+
+    
+    
+    <section>
+      <h1>Comments</h1>
+      <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+    </section>
+    
+    <ul class="pager">
+      
+      <li class="previous"><a class="basic-alignment left"
+        href="/blog/2016/04/27/architect-attitude-architecture/" title="Previous Post:
+        Architect Attitude Architecture">&laquo; Architect Attitude Architecture</a></li>
+      
+      <li><a href="/blog/archives">Blog Archives</a></li>
+      
+    </ul>
+  </footer>
+</article>
+
+<aside class="sidebar-nav span3">
+  
+    <section class="well">
+  <ul id="recent_posts" class="nav nav-list">
+    <li class="nav-header">Recent Posts</li>
+    
+      <li class="post">
+        <a href="/blog/2016/09/08/chatbots-integrating-with-your-chat-client/">Chatbots - Integrating with your chat client</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/04/27/architect-attitude-architecture/">Architect Attitude Architecture</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/10/10/parallelism-on-multi-core-processors-continuation/">Parallelism on Multi-core Processors: Continuation</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/08/04/parallelism-on-multi-core-processors/">Parallelism on Multi-core Processors</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/07/10/azure-scheduler-can-post-to-azure-service-bus-queue-and-topic/">Azure Scheduler can post to Azure Service Bus Queue and Topic</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section class="well">
+  <ul id="gh_repos" class="nav">
+    <li class="nav-header">GitHub Repos</li>
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/Prasad-Pillutla">@Prasad-Pillutla</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        github.showRepos({
+            user: 'Prasad-Pillutla',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/asides/github.js" type="text/javascript"> </script>
+</section>
+
+
+<section>
+  <h1>On Delicious</h1>
+  <div id="delicious"></div>
+  <script type="text/javascript" src="http://feeds.delicious.com/v2/json/prasadpillutla?count=3&amp;sort=date&amp;callback=renderDeliciousLinks"></script>
+  <p><a href="http://delicious.com/prasadpillutla">My Delicious Bookmarks &raquo;</a></p>
+</section>
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo" class="page-footer"><hr>
+<p>
+  Copyright &copy; 2016 - Prasad -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'PrasadPillutla';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://prasad-pillutla.github.io/Prasadthinks/blog/2016/09/08/chatbots-integrating-with-your-chat-client/';
+        var disqus_url = 'http://prasad-pillutla.github.io/Prasadthinks/blog/2016/09/08/chatbots-integrating-with-your-chat-client/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

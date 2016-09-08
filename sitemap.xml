@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>http://prasad-pillutla.github.io/Prasadthinks/blog/2016/09/08/chatbots-integrating-with-your-chat-client/</loc>
+    <lastmod>2016-09-08T15:56:22+00:00</lastmod>
+  </url>
+  <url>
     <loc>http://prasad-pillutla.github.io/Prasadthinks/blog/2016/04/27/architect-attitude-architecture/</loc>
     <lastmod>2016-04-27T18:15:38+00:00</lastmod>
   </url>
@@ -84,5 +88,26 @@
   </url>
   <url>
     <loc>http://prasad-pillutla.github.io/Prasadthinks/blog/categories/programming/</loc>
+  </url>
+  <url>
+    <loc>http://prasad-pillutla.github.io/Prasadthinks/blog/categories/machine/</loc>
+  </url>
+  <url>
+    <loc>http://prasad-pillutla.github.io/Prasadthinks/blog/categories/learning/</loc>
+  </url>
+  <url>
+    <loc>http://prasad-pillutla.github.io/Prasadthinks/blog/categories/chatbots/</loc>
+  </url>
+  <url>
+    <loc>http://prasad-pillutla.github.io/Prasadthinks/blog/categories/web/</loc>
+  </url>
+  <url>
+    <loc>http://prasad-pillutla.github.io/Prasadthinks/blog/categories/services/</loc>
+  </url>
+  <url>
+    <loc>http://prasad-pillutla.github.io/Prasadthinks/blog/categories/microsoft/</loc>
+  </url>
+  <url>
+    <loc>http://prasad-pillutla.github.io/Prasadthinks/blog/categories/azure/</loc>
   </url>
 </urlset>
