@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: architecture | Prasad Thinks]]></title>
+  <link href="http://prasad-pillutla.github.io/Prasadthinks/blog/categories/architecture/atom.xml" rel="self"/>
+  <link href="http://prasad-pillutla.github.io/Prasadthinks/"/>
+  <updated>2016-09-08T20:24:39+00:00</updated>
+  <id>http://prasad-pillutla.github.io/Prasadthinks/</id>
+  <author>
+    <name><![CDATA[Prasad]]></name>
+    <email><![CDATA[Prasad.pillu@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Architect Attitude Architecture]]></title>
+    <link href="http://prasad-pillutla.github.io/Prasadthinks/blog/2016/04/27/architect-attitude-architecture/"/>
+    <updated>2016-04-27T18:15:38+00:00</updated>
+    <id>http://prasad-pillutla.github.io/Prasadthinks/blog/2016/04/27/architect-attitude-architecture</id>
+    <content type="html"><![CDATA[<p>When you ask two architects with similar experiences to define a system, they would approach and define it very differently. What distinguishes the two defined architectures?  and Why are they different? I think and believe, Software architecture should not be considered merely as a set of models or structures, but should include the <strong>decisions</strong> that lead to these particular structures, and the rationale behind them.</p>
+
+<p><em>What is decision making?</em> and <em>How do we make decisions?</em>. Decision making is a cognitive process that involves selecting among several alternative possibilities. Each of us make decisions based on our attitude, which we develop over years based on our interpretation of world around us. This Attitude dictates what we choose from alternate possibilities. Architect who would like to have control on things might take monolithic design approach while other Architect with objective attitude might end up with distributed or micro-services driven architecture.</p>
+
+<p>Like Medicine, <strong>Software Architecture is not a science but a practice</strong>. Individuals’ attitude defines how he/she approaches and architects solution to the problem.</p>
+
+<p>To be a successful Architect it is important to use experiences to tune attitude and apply them to problem at hand.</p>
+]]></content>
+  </entry>
+  
+</feed>

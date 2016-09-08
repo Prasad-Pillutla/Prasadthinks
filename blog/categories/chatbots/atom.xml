@@ -4,7 +4,7 @@
   <title><![CDATA[Category: chatbots, | Prasad Thinks]]></title>
   <link href="http://prasad-pillutla.github.io/Prasadthinks/blog/categories/chatbots/atom.xml" rel="self"/>
   <link href="http://prasad-pillutla.github.io/Prasadthinks/"/>
-  <updated>2016-09-08T18:54:51+00:00</updated>
+  <updated>2016-09-08T20:24:39+00:00</updated>
   <id>http://prasad-pillutla.github.io/Prasadthinks/</id>
   <author>
     <name><![CDATA[Prasad]]></name>
@@ -44,19 +44,26 @@
 
 <p><strong><em>Step 2.1: Initiate communication with Chatbot</em></strong></p>
 
-<p>Any custom chat client should start its interaction with Chatbot by posting message to <a href="https://directline.botframework.com/api/conversations"></a>. Header of the POST message should have Authorization parameter, which take Direct Line secret generated in Step 1<br/>
-Authorization: BotConnector <strong><em><Direct Line secret></em></strong>
-Above request returns with <strong>return code 200</strong> and conversation id, like below</p>
+<p>Any custom chat client should start its interaction with Chatbot by posting message to &ldquo;<a href="https://directline.botframework.com/api/conversations">https://directline.botframework.com/api/conversations</a>&rdquo;</p>
+
+<p>Header of the POST message should have Authorization parameter, which take Direct Linesecret generated in Step 1</p>
+
+<pre><code>Authorization: BotConnector &lt;Direct Line secret&gt;
+</code></pre>
+
+<p>Above request returns with <strong>return code 200</strong> and conversation id, like below</p>
 
 <p><img src="/images/Post%201.jpg" alt="" /></p>
+
+<p><img src="/images/Post%201%20response.jpg" alt="" /></p>
 
 <p><strong>Note</strong> conversationId. This token/conversationId is <strong><em>valid only for 30 minutes</em></strong></p>
 
 <p><strong><em>Step 2.2: POST message to Chatbot</em></strong></p>
 
-<p>Using the conversationId we can POST any number of messages to Chatbot. All messages to Chatbot will be posted to a new URL, which is <a href="https://directline.botframework.com/api/conversations/&lt;ConversationId>/messages"></a>, in this example the POST request will be sent to</p>
+<p>Using the conversationId we can POST any number of messages to Chatbot. All messages to Chatbot will be posted to a new URL, which is <em>&ldquo;<a href="https://directline.botframework.com/api/conversations/">https://directline.botframework.com/api/conversations/</a><ConversationId>/messages&rdquo;</em>, in this example the POST request will be sent to</p>
 
-<p><a href="https://directline.botframework.com/api/conversations/Jk21ZkYRQ6a/messages"></a></p>
+<p>&ldquo;<a href="https://directline.botframework.com/api/conversations/Jk21ZkYRQ6a/messages">https://directline.botframework.com/api/conversations/Jk21ZkYRQ6a/messages</a>&rdquo;</p>
 
 <pre><code>Request Body will be in the format below
 {
@@ -68,13 +75,13 @@ Above request returns with <strong>return code 200</strong> and conversation id,
 
 <p>Above request doesn’t have a response body and <strong>return Code will be 204</strong>.</p>
 
-<p><img src="/images/Post%201%20response.jpg" alt="" /></p>
+<p><strong><em>Content-type</em></strong> must be sent in header. Without Content-type in header, Chat Client cannot post message to Chatbot.</p>
 
 <p><strong><em>Step 2.3: Retrieve Chatbot&rsquo;s response for the message sent</em></strong></p>
 
 <p>Above request doesn’t return response from Bot. To view responses from Bot we need to perform a GET request on same URI to which we posted in <em>Step 2.2: POST message to Chatbot</em></p>
 
-<p>GET <a href="https://directline.botframework.com/api/conversations/Jk21ZkYRQ6a/messages"></a></p>
+<p>GET &ldquo;<a href="https://directline.botframework.com/api/conversations/Jk21ZkYRQ6a/messages">https://directline.botframework.com/api/conversations/Jk21ZkYRQ6a/messages</a>&rdquo;</p>
 
 <p>Response from bot is present in “text” field</p>
 
