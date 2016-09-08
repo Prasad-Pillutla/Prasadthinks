@@ -1,4 +1,4 @@
 User-agent: *
 Disallow: 
 
-Sitemap: http://prasad-pillutla.github.io/prasadthinks/sitemap.xml 
+Sitemap: http://prasad-pillutla.github.io/Prasadthinks/sitemap.xml 

@@ -3,7 +3,7 @@ layout: post
 title: "Parallelism on Multi-core Processors: Continuation"
 date: 2015-10-10 14:29:53 +0000
 comments: true
-categories: 
+categories: Performance, Parallel Programming
 ---
 Thanks for taking time to read through my last post, [Parallelism on Multi-core Processors](http://www.prasadthinks.com/blog/2015/08/04/parallelism-on-multi-core-processors/). I was asked by many on how to handle calls to resources which are not thread-safe and have to be locked either by caller or by library, which exposes the resource. Let me pick the same example that I was using in [previous post](http://www.prasadthinks.com/blog/2015/08/04/parallelism-on-multi-core-processors/) but simplifying it in the interest of time
 

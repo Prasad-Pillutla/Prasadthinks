@@ -2,10 +2,10 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 
   <title><![CDATA[Prasad Thinks]]></title>
-  <link href="http://prasad-pillutla.github.io/prasadthinks/atom.xml" rel="self"/>
-  <link href="http://prasad-pillutla.github.io/prasadthinks/"/>
-  <updated>2016-03-11T16:24:36+00:00</updated>
-  <id>http://prasad-pillutla.github.io/prasadthinks/</id>
+  <link href="http://prasad-pillutla.github.io/Prasadthinks/atom.xml" rel="self"/>
+  <link href="http://prasad-pillutla.github.io/Prasadthinks/"/>
+  <updated>2016-09-08T18:11:51+00:00</updated>
+  <id>http://prasad-pillutla.github.io/Prasadthinks/</id>
   <author>
     <name><![CDATA[Prasad]]></name>
     <email><![CDATA[Prasad.pillu@gmail.com]]></email>
@@ -14,10 +14,91 @@
 
   
   <entry>
+    <title type="html"><![CDATA[Chatbots - Integrating with your chat client]]></title>
+    <link href="http://prasad-pillutla.github.io/Prasadthinks/blog/2016/09/08/chatbots-integrating-with-your-chat-client/"/>
+    <updated>2016-09-08T15:56:22+00:00</updated>
+    <id>http://prasad-pillutla.github.io/Prasadthinks/blog/2016/09/08/chatbots-integrating-with-your-chat-client</id>
+    <content type="html"><![CDATA[<p>Chatbot, software world’s new celebrity. What is it? As per Wikipedia</p>
+
+<p><em>A <strong>Chatbot</strong> (also known as a <strong>Talkbot</strong>, <strong>Chatterbot</strong>, <strong>Bot</strong>, <strong>Chatterbox</strong>, <strong>Artificial Conversational Entity</strong>) is a computer program designed to simulate an intelligent conversation with one or more human users via auditory or textual methods</em>.</p>
+
+<p>The way I see it (in over simplified statement), it is a <strong>Web Service</strong> powered by Natural Language Processing and, driven by BigData and Machine/Deep Learning.</p>
+
+<p>There are many frameworks available to build a Chatbot and of all, I chose <a href="https://dev.botframework.com/">Microsoft Bot Framework</a> for obvious reasons. There are good number of articles on how to build Chatbot using <a href="https://dev.botframework.com/">Microsoft Bot Framework</a> and deploy it on Azure, which I’ll not repeat.</p>
+
+<p>Once Chatbot is built and deployed, a client application is required using which users can communicate with it. Microsoft, provides Out-of-box integration with Skype and allows Chatbot developers to integrate their Chatbots with Facebook Messenger, WeChat and <a href="https://docs.botframework.com/en-us/csharp/builder/sdkreference/gettingstarted.html#channels">few others</a>.</p>
+
+<p>There are situations when developers want their custom chat clients to interact with Chatbots and integration with custom chat clients is made possible by <a href="https://docs.botframework.com/en-us/restapi/directline/">DirectLine API</a>. Chatbot integration with custom chat clients is a challenge as there is little or no documentation and no samples available for reference. In this article I would using <a href="http://www.telerik.com/fiddler">fiddler</a> to demonstrate Chatbot integration with custom chat clients. Let’s get started</p>
+
+<p><strong>Step 1: Enable DirectLine API</strong>
+Login into your <a href="https://dev.botframework.com/">bot dashboard</a> using Microsoft Live ID. Once you register your bot you’ll supported channels.In the list of channels <strong><em>Add Direct Line</em></strong> channel.</p>
+
+<p><img src="http://prasad-pillutla.github.io/Prasadthinks/images/enableDirectLine.jpg" alt="" /></p>
+
+<p>When you select Add, a new browser tab will open up where you should <strong>Check</strong> <em>“Enable this bot on Direct Line”</em> option. You should also generate Direct Line Secret by clicking <em>“Generate Direct Line secret button”</em>. Save generated secret for later use.</p>
+
+<p><img src="http://prasad-pillutla.github.io/Prasadthinks/images/AddDL.jpg" alt="" /></p>
+
+<p><strong>Step 2: Use Fiddler to communicate with the Chatbot hosted on Azure</strong></p>
+
+<p><strong><em>Step 2.1: Initiate communication with Chatbot</em></strong>
+Any custom chat client should start its interaction with Chatbot by posting message to <a href="https://directline.botframework.com/api/conversations"></a>. Header of the POST message should have Authorization parameter, which take Direct Line secret generated in Step 1<br/>
+Authorization: BotConnector <strong><em><Direct Line secret></em></strong>
+Above request returns with <strong>return code 200</strong> and conversation id, like below</p>
+
+<p><img src="http://prasad-pillutla.github.io/Prasadthinks/images/Post%201.jpg" alt="" /></p>
+
+<p><strong>Note</strong> conversationId. This token/conversationId is <strong><em>valid only for 30 minutes</em></strong></p>
+
+<p><strong><em>Step 2.2: POST message to Chatbot</em></strong>
+Using the conversationId we can POST any number of messages to Chatbot. All messages to Chatbot will be posted to a new URL, which is <a href="https://directline.botframework.com/api/conversations/&lt;ConversationId>/messages"></a>, in this example the POST request will be sent to</p>
+
+<p><a href="https://directline.botframework.com/api/conversations/Jk21ZkYRQ6a/messages"></a></p>
+
+<pre><code>Request Body will be in the format below
+{
+"text": “&lt;Your Message&gt;”
+}
+</code></pre>
+
+<p><img src="http://prasad-pillutla.github.io/Prasadthinks/images/Post%202.jpg" alt="" /></p>
+
+<p>Above request doesn’t have a response body and <strong>return Code will be 204</strong>.</p>
+
+<p><img src="http://prasad-pillutla.github.io/Prasadthinks/images/Post%201%20response.jpg" alt="" /></p>
+
+<p><strong><em>Step 2.3: Retrieve Chatbot&rsquo;s response for the message sent</em></strong></p>
+
+<p>Above request doesn’t return response from Bot. To view responses from Bot we need to perform a GET request on same URI to which we posted in <em>Step 2.2: POST message to Chatbot</em></p>
+
+<p>GET <a href="https://directline.botframework.com/api/conversations/Jk21ZkYRQ6a/messages"></a></p>
+
+<p>Response from bot is present in “text” field</p>
+
+<p><img src="http://prasad-pillutla.github.io/Prasadthinks/images/Get%20Message.jpg" alt="" /></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Architect Attitude Architecture]]></title>
+    <link href="http://prasad-pillutla.github.io/Prasadthinks/blog/2016/04/27/architect-attitude-architecture/"/>
+    <updated>2016-04-27T18:15:38+00:00</updated>
+    <id>http://prasad-pillutla.github.io/Prasadthinks/blog/2016/04/27/architect-attitude-architecture</id>
+    <content type="html"><![CDATA[<p>When you ask two architects with similar experiences to define a system, they would approach and define it very differently. What distinguishes the two defined architectures?  and Why are they different? I think and believe, Software architecture should not be considered merely as a set of models or structures, but should include the <strong>decisions</strong> that lead to these particular structures, and the rationale behind them.</p>
+
+<p><em>What is decision making?</em> and <em>How do we make decisions?</em>. Decision making is a cognitive process that involves selecting among several alternative possibilities. Each of us make decisions based on our attitude, which we develop over years based on our interpretation of world around us. This Attitude dictates what we choose from alternate possibilities. Architect who would like to have control on things might take monolithic design approach while other Architect with objective attitude might end up with distributed or micro-services driven architecture.</p>
+
+<p>Like Medicine, <strong>Software Architecture is not a science but a practice</strong>. Individuals’ attitude defines how he/she approaches and architects solution to the problem.</p>
+
+<p>To be a successful Architect it is important to use experiences to tune attitude and apply them to problem at hand.</p>
+]]></content>
+  </entry>
+  
+  <entry>
     <title type="html"><![CDATA[Parallelism on Multi-core Processors: Continuation]]></title>
-    <link href="http://prasad-pillutla.github.io/prasadthinks/blog/2015/10/10/parallelism-on-multi-core-processors-continuation/"/>
+    <link href="http://prasad-pillutla.github.io/Prasadthinks/blog/2015/10/10/parallelism-on-multi-core-processors-continuation/"/>
     <updated>2015-10-10T14:29:53+00:00</updated>
-    <id>http://prasad-pillutla.github.io/prasadthinks/blog/2015/10/10/parallelism-on-multi-core-processors-continuation</id>
+    <id>http://prasad-pillutla.github.io/Prasadthinks/blog/2015/10/10/parallelism-on-multi-core-processors-continuation</id>
     <content type="html"><![CDATA[<p>Thanks for taking time to read through my last post, <a href="http://www.prasadthinks.com/blog/2015/08/04/parallelism-on-multi-core-processors/">Parallelism on Multi-core Processors</a>. I was asked by many on how to handle calls to resources which are not thread-safe and have to be locked either by caller or by library, which exposes the resource. Let me pick the same example that I was using in <a href="http://www.prasadthinks.com/blog/2015/08/04/parallelism-on-multi-core-processors/">previous post</a> but simplifying it in the interest of time</p>
 
 <pre><code>for (int i = 0; i &lt; 10000; ++i)
@@ -50,9 +131,9 @@
   
   <entry>
     <title type="html"><![CDATA[Parallelism on Multi-core Processors]]></title>
-    <link href="http://prasad-pillutla.github.io/prasadthinks/blog/2015/08/04/parallelism-on-multi-core-processors/"/>
+    <link href="http://prasad-pillutla.github.io/Prasadthinks/blog/2015/08/04/parallelism-on-multi-core-processors/"/>
     <updated>2015-08-04T16:55:13+00:00</updated>
-    <id>http://prasad-pillutla.github.io/prasadthinks/blog/2015/08/04/parallelism-on-multi-core-processors</id>
+    <id>http://prasad-pillutla.github.io/Prasadthinks/blog/2015/08/04/parallelism-on-multi-core-processors</id>
     <content type="html"><![CDATA[<p>Parallelism, a dark art, no one gets this right first time and many times after that as well. This is one area in software that cannot be understood without understanding underlying hardware(processor). To begin with let me explain the evolution of hardware and then dive into software aspects.</p>
 
 <p>Until early 2000’s processors were single core and were capable of executing only one instruction at a time. Focus of Intel and AMD was on adding more cycles to processor so that more instructions can be executed in a second and thereby reduce overall time that a program takes to execute. After reaching to certain point, heat sink issues didn’t allow adding any more cycles to processor.</p>
@@ -89,7 +170,7 @@
 
 <p>A simple for loop, which madly iterates over a large number and computes product of two numbers. When I run this program on an <strong>Intel I7 quadcore machine with 16GB RAM</strong>, what do I see in <a href="https://msdn.microsoft.com/en-us/library/ff727783.aspx">perfmon</a></p>
 
-<p><img src="http://prasad-pillutla.github.io/prasadthinks/images/Seq_processing.jpg" alt="" />
+<p><img src="http://prasad-pillutla.github.io/Prasadthinks/images/Seq_processing.jpg" alt="" />
 Histogram bars tell me that above program is not utilizing all cores efficiently and also the load is unevenly distributed. This means that above program will take longer time to execute.</p>
 
 <p>Now I’ll modify program to use multiple threads to achieve parallelism by replacing <strong>for</strong> with <strong>Parallel.For</strong></p>
@@ -122,7 +203,7 @@ Histogram bars tell me that above program is not utilizing all cores efficiently
 </code></pre>
 
 <p>Now what does <a href="https://msdn.microsoft.com/en-us/library/ff727783.aspx">perfmon</a> show
-<img src="http://prasad-pillutla.github.io/prasadthinks/images/Parallel_Processing.jpg" alt="" /></p>
+<img src="http://prasad-pillutla.github.io/Prasadthinks/images/Parallel_Processing.jpg" alt="" /></p>
 
 <p>Load is equally distributed among 4 cores and all cores are utilized to their maximum limit. This means the program will run faster. On my machine (<strong>Intel I7, 4 cores, 16GB RAM</strong>) it took 2.487 seconds to complete <strong>Parallel</strong> version and 5.320 seconds to complete <strong>simple for</strong> loop version. It tells me that using all cores effectively will execute program in less time. I’ve added <strong>.NetCLRLocksAndThreads</strong> counters to detect any contentions (in yellow) during execution of this program. Even though there are multiple threads executing same set of instructions there are no contentions reported.</p>
 
@@ -157,7 +238,7 @@ Histogram bars tell me that above program is not utilizing all cores efficiently
 </code></pre>
 
 <p>What do I see from perfmon now? Utilization of cores is 100% and load is evenly distributed among 4 cores.
-<img src="http://prasad-pillutla.github.io/prasadthinks/images/Contention.jpg" alt="" /></p>
+<img src="http://prasad-pillutla.github.io/Prasadthinks/images/Contention.jpg" alt="" /></p>
 
 <p>Total Number of contentions (Total # of Contentions) have gone up significantly and Contentions Rate Per Second has also gone up. Which resource is causing the contention? Console, yes console is the resource under contention. Only one thread can write to console at any moment. For writing to console, a thread has to request for lock on <strong>Console</strong> and wait until it gets lock. There are multiple threads waiting for the same lock/resource and this has a profound impact on performance and execution time.</p>
 
@@ -189,12 +270,12 @@ Histogram bars tell me that above program is not utilizing all cores efficiently
   
   <entry>
     <title type="html"><![CDATA[Azure Scheduler can post to Azure Service Bus Queue and Topic]]></title>
-    <link href="http://prasad-pillutla.github.io/prasadthinks/blog/2015/07/10/azure-scheduler-can-post-to-azure-service-bus-queue-and-topic/"/>
+    <link href="http://prasad-pillutla.github.io/Prasadthinks/blog/2015/07/10/azure-scheduler-can-post-to-azure-service-bus-queue-and-topic/"/>
     <updated>2015-07-10T18:53:09+00:00</updated>
-    <id>http://prasad-pillutla.github.io/prasadthinks/blog/2015/07/10/azure-scheduler-can-post-to-azure-service-bus-queue-and-topic</id>
+    <id>http://prasad-pillutla.github.io/Prasadthinks/blog/2015/07/10/azure-scheduler-can-post-to-azure-service-bus-queue-and-topic</id>
     <content type="html"><![CDATA[<p>Azure Scheduler today doesn’t allow submitting long running jobs to Service bus queues/topics but does allow submitting them to storage queues. What if, there is a requirement to submit jobs to service bus queues/topics so that features like duplicate detection can be leveraged to eliminate duplicate jobs from getting executed. One can submit messages to Service bus queue from Scheduler dashboard using REST APIs. Here is how we do it</p>
 
-<p><img src="http://prasad-pillutla.github.io/prasadthinks/images/SB.jpg" alt="Job Action" /></p>
+<p><img src="http://prasad-pillutla.github.io/Prasadthinks/images/SB.jpg" alt="Job Action" /></p>
 
 <p>Select <strong>Post</strong> method in Scheduler Job dashboard, which displays above template. URI will represent Queue or Topic where ever we want to send message. URI template for Service bus would be <em>http{s}://{serviceNamespace}.servicebus.windows.net/{queuePath|topicPath}/messages</em></p>
 
@@ -209,7 +290,7 @@ Histogram bars tell me that above program is not utilizing all cores efficiently
 <p><strong>Content-Type</strong> value can be anything but it is mandatory to have this parameter added to header.</p>
 
 <p>When Scheduler executes the job, a message will be posted to Service Bus Queue or Topic. In Service Bus Explorer screen snapshot below, we can see properties that we set while creating the job
-<img src="http://prasad-pillutla.github.io/prasadthinks/images/SBExp.jpg" alt="Service Bus Explorer" /></p>
+<img src="http://prasad-pillutla.github.io/Prasadthinks/images/SBExp.jpg" alt="Service Bus Explorer" /></p>
 
 <p>You can do this from code as well and below is the sample</p>
 
@@ -282,9 +363,9 @@ Histogram bars tell me that above program is not utilizing all cores efficiently
   
   <entry>
     <title type="html"><![CDATA[Azure Service Bus Partition Queues and Topics? Are they different?]]></title>
-    <link href="http://prasad-pillutla.github.io/prasadthinks/blog/2015/07/02/azure-service-bus-partition-queues-and-topics-are-they-different/"/>
+    <link href="http://prasad-pillutla.github.io/Prasadthinks/blog/2015/07/02/azure-service-bus-partition-queues-and-topics-are-they-different/"/>
     <updated>2015-07-02T18:21:46+00:00</updated>
-    <id>http://prasad-pillutla.github.io/prasadthinks/blog/2015/07/02/azure-service-bus-partition-queues-and-topics-are-they-different</id>
+    <id>http://prasad-pillutla.github.io/Prasadthinks/blog/2015/07/02/azure-service-bus-partition-queues-and-topics-are-they-different</id>
     <content type="html"><![CDATA[<p>Queues/Topics have been there for longtime and everyone thinks they know everything about them. I would park that discussion for later date and discuss about partitioning, which was introduced as an add-on capability to these services.</p>
 
 <p>In a normal service bus queue/topic there is only message store powered by SQL to store messages. If this message store is not reachable for any reason then entire queue/topic is unavailable. Throughput of queue/topic is limited by this single message store, which more often than not is a bottleneck.</p>
@@ -295,20 +376,20 @@ Histogram bars tell me that above program is not utilizing all cores efficiently
 Partitioned queues/topics can be created by enabling a checkbox box in configure queue/topic dialog. By default partitioning is enabled and below screenshots show how to enable/disable partitioning.</p>
 
 <p><strong>Create Queue</strong>
-<img src="http://prasad-pillutla.github.io/prasadthinks/images/basic.jpg" alt="Create Queue" /></p>
+<img src="http://prasad-pillutla.github.io/Prasadthinks/images/basic.jpg" alt="Create Queue" /></p>
 
 <p><strong>Configure Queue</strong>
-<img src="http://prasad-pillutla.github.io/prasadthinks/images/part.jpg" alt="Configure Queue" /></p>
+<img src="http://prasad-pillutla.github.io/Prasadthinks/images/part.jpg" alt="Configure Queue" /></p>
 
 <p><strong>Queue summary</strong>
-<img src="http://prasad-pillutla.github.io/prasadthinks/images/qsummary.jpg" alt="Queue summary" /></p>
+<img src="http://prasad-pillutla.github.io/Prasadthinks/images/qsummary.jpg" alt="Queue summary" /></p>
 
 <p>In the above screenshots, you can see I mentioned queue size (Max Size) as 1 GB but queue 16 GB queue is created? What could have happened? When partitioning is enabled Azure creates 16 partitions or message stores at the backend, each partition is of the size, which was mentioned during create in configure queue dialog. In the above screenshot, I requested 1 GB queue and enabled partitioning so Azure created 16 partitions each of the size 1 GB (, which I mentioned during create). What if I mentioned 5 GB as queue size during create, I get 80 GB queue (16 partitions each of 5 GB size).</p>
 
 <p>Additional space is fine but how does it impact my reads and writes? As shown in diagram below (for simplicity only 3 partitions are shown), 9 messages (Msg 1 thru Msg 9) are sent to queue and queue internally uses round robin algorithm to send messages into partitions. If there is one receiver reading messages from queue, messages are picked from partitions at random. If we abandon a message after reading it then the message goes back to partition from which it was picked and also doesn’t break sequence in that partition. For example, if we pick Msg 5 in partition 2 and then abandon it, it will still be second message in partition 2. But when next receive call is made by receiver, queue can return message from any partition (could also be Msg 5 again). This can break sequential processing because we are expecting Msg 5 (which will always be the case if the queue doesn’t have partitions) and with partitions there is no gurantee that Msg 5 will be returned.</p>
 
 <p><strong>Message selection</strong>
-<img src="http://prasad-pillutla.github.io/prasadthinks/images/process.jpg" alt="Message selection" /></p>
+<img src="http://prasad-pillutla.github.io/Prasadthinks/images/process.jpg" alt="Message selection" /></p>
 
 <p>If a partition is unavailable when a client is writing a message into it then queue will send message to next available partition. While reading, message from available partition is returned so there is no wait time like it is in single partition queue and will improve performance. Client application is abstracted from this entire process of partition selection. To enable high availability for queues/topics during local failures it is advised to turn-on partitions during their creation. <em>If sequential processing is a hard requirement then don’t turn-on partitioning</em>.</p>
 ]]></content>
@@ -316,9 +397,9 @@ Partitioned queues/topics can be created by enabling a checkbox box in configure
   
   <entry>
     <title type="html"><![CDATA[Nuances of Azure Event Hubs]]></title>
-    <link href="http://prasad-pillutla.github.io/prasadthinks/blog/2015/06/18/nuances-of-azure-event-hubs/"/>
+    <link href="http://prasad-pillutla.github.io/Prasadthinks/blog/2015/06/18/nuances-of-azure-event-hubs/"/>
     <updated>2015-06-18T17:13:27+00:00</updated>
-    <id>http://prasad-pillutla.github.io/prasadthinks/blog/2015/06/18/nuances-of-azure-event-hubs</id>
+    <id>http://prasad-pillutla.github.io/Prasadthinks/blog/2015/06/18/nuances-of-azure-event-hubs</id>
     <content type="html"><![CDATA[<p>Event Hub, Microsoft’s PaaS offering to accept millions of events per second is built to handle traffic for Internet of Things scenarios. It (Event Hub) is an offshoot of Partitioned queues/topics and leverages same partitioning strategy. I know you would ask, why does Event Hub scale and Queues/Topics don’t? To achieve scale certain features like session based messaging, TTL were let go in Event Hub, which makes it light-weight and achieve the scale.</p>
 
 <p>In this post I’ll not be writing about Event Hubs functionality, which is available on <a href="http://azure.microsoft.com/en-in/services/event-hubs/">MSDN</a> instead I’ll be sharing subtle aspects which are important to know while using Event Hubs.</p>
@@ -413,9 +494,9 @@ Partitioned queues/topics can be created by enabling a checkbox box in configure
   
   <entry>
     <title type="html"><![CDATA[Singularity of Software Development]]></title>
-    <link href="http://prasad-pillutla.github.io/prasadthinks/blog/2015/06/04/Singularity_of_Software_Development/"/>
+    <link href="http://prasad-pillutla.github.io/Prasadthinks/blog/2015/06/04/Singularity_of_Software_Development/"/>
     <updated>2015-06-04T18:18:23+00:00</updated>
-    <id>http://prasad-pillutla.github.io/prasadthinks/blog/2015/06/04/Singularity_of_Software_Development</id>
+    <id>http://prasad-pillutla.github.io/Prasadthinks/blog/2015/06/04/Singularity_of_Software_Development</id>
     <content type="html"><![CDATA[<p><em>A physician, a civil engineer, and a computer scientist were arguing about what was the oldest profession in the world. The physician remarked, “Well, in the Bible, it says that God created Eve from a rib taken out of Adam. This clearly required surgery, and so I can rightly claim that mine is the oldest profession in the world.” The civil engineer interrupted, and said, “But even earlier in the book of Genesis, it states that God created the order of the heavens and the earth from out of the chaos. This was the first and certainly the most spectacular application of civil engineering. Therefore, fair doctor, you are wrong: mine is the oldest profession in the world.” The computer scientist leaned back in her chair, smiled, and then said confidently, “Ah, but who do you think created the chaos?”</em></p>
 
 <p>One prime (not the only) reason for the chaos is rigidity of software architecture and design, by rigidity I meant how easy or hard is it to replace an existing algorithm or a feature or a component with a new and better one. If a component can be replaced with a better one, like replace one caching strategy with other, RDBMS with NoSQL without having to refactor entire code base then design/architecture can be called flexible or stable. But how many times changes like these are contained to a class or two.</p>

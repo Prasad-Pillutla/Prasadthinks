@@ -2,10 +2,10 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 
   <title><![CDATA[Category: topics, | Prasad Thinks]]></title>
-  <link href="http://prasad-pillutla.github.io/prasadthinks/blog/categories/topics/atom.xml" rel="self"/>
-  <link href="http://prasad-pillutla.github.io/prasadthinks/"/>
-  <updated>2016-03-11T16:24:36+00:00</updated>
-  <id>http://prasad-pillutla.github.io/prasadthinks/</id>
+  <link href="http://prasad-pillutla.github.io/Prasadthinks/blog/categories/topics/atom.xml" rel="self"/>
+  <link href="http://prasad-pillutla.github.io/Prasadthinks/"/>
+  <updated>2016-09-08T18:11:51+00:00</updated>
+  <id>http://prasad-pillutla.github.io/Prasadthinks/</id>
   <author>
     <name><![CDATA[Prasad]]></name>
     <email><![CDATA[Prasad.pillu@gmail.com]]></email>
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[Azure Service Bus Partition Queues and Topics? Are they different?]]></title>
-    <link href="http://prasad-pillutla.github.io/prasadthinks/blog/2015/07/02/azure-service-bus-partition-queues-and-topics-are-they-different/"/>
+    <link href="http://prasad-pillutla.github.io/Prasadthinks/blog/2015/07/02/azure-service-bus-partition-queues-and-topics-are-they-different/"/>
     <updated>2015-07-02T18:21:46+00:00</updated>
-    <id>http://prasad-pillutla.github.io/prasadthinks/blog/2015/07/02/azure-service-bus-partition-queues-and-topics-are-they-different</id>
+    <id>http://prasad-pillutla.github.io/Prasadthinks/blog/2015/07/02/azure-service-bus-partition-queues-and-topics-are-they-different</id>
     <content type="html"><![CDATA[<p>Queues/Topics have been there for longtime and everyone thinks they know everything about them. I would park that discussion for later date and discuss about partitioning, which was introduced as an add-on capability to these services.</p>
 
 <p>In a normal service bus queue/topic there is only message store powered by SQL to store messages. If this message store is not reachable for any reason then entire queue/topic is unavailable. Throughput of queue/topic is limited by this single message store, which more often than not is a bottleneck.</p>

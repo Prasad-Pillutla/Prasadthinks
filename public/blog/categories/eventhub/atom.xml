@@ -2,10 +2,10 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 
   <title><![CDATA[Category: eventhub, | Prasad Thinks]]></title>
-  <link href="http://prasad-pillutla.github.io/prasadthinks/blog/categories/eventhub/atom.xml" rel="self"/>
-  <link href="http://prasad-pillutla.github.io/prasadthinks/"/>
-  <updated>2016-03-11T16:24:36+00:00</updated>
-  <id>http://prasad-pillutla.github.io/prasadthinks/</id>
+  <link href="http://prasad-pillutla.github.io/Prasadthinks/blog/categories/eventhub/atom.xml" rel="self"/>
+  <link href="http://prasad-pillutla.github.io/Prasadthinks/"/>
+  <updated>2016-09-08T18:11:51+00:00</updated>
+  <id>http://prasad-pillutla.github.io/Prasadthinks/</id>
   <author>
     <name><![CDATA[Prasad]]></name>
     <email><![CDATA[Prasad.pillu@gmail.com]]></email>
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[Nuances of Azure Event Hubs]]></title>
-    <link href="http://prasad-pillutla.github.io/prasadthinks/blog/2015/06/18/nuances-of-azure-event-hubs/"/>
+    <link href="http://prasad-pillutla.github.io/Prasadthinks/blog/2015/06/18/nuances-of-azure-event-hubs/"/>
     <updated>2015-06-18T17:13:27+00:00</updated>
-    <id>http://prasad-pillutla.github.io/prasadthinks/blog/2015/06/18/nuances-of-azure-event-hubs</id>
+    <id>http://prasad-pillutla.github.io/Prasadthinks/blog/2015/06/18/nuances-of-azure-event-hubs</id>
     <content type="html"><![CDATA[<p>Event Hub, Microsoft’s PaaS offering to accept millions of events per second is built to handle traffic for Internet of Things scenarios. It (Event Hub) is an offshoot of Partitioned queues/topics and leverages same partitioning strategy. I know you would ask, why does Event Hub scale and Queues/Topics don’t? To achieve scale certain features like session based messaging, TTL were let go in Event Hub, which makes it light-weight and achieve the scale.</p>
 
 <p>In this post I’ll not be writing about Event Hubs functionality, which is available on <a href="http://azure.microsoft.com/en-in/services/event-hubs/">MSDN</a> instead I’ll be sharing subtle aspects which are important to know while using Event Hubs.</p>

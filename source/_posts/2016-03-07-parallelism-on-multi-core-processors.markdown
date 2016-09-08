@@ -3,7 +3,7 @@ layout: post
 title: "Parallelism on Multi-core Processors"
 date: 2015-08-04 16:55:13 +0000
 comments: true
-categories:
+categories: Performance, Parallel Programming
 ---
 Parallelism, a dark art, no one gets this right first time and many times after that as well. This is one area in software that cannot be understood without understanding underlying hardware(processor). To begin with let me explain the evolution of hardware and then dive into software aspects.
 

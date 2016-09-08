@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://prasad-pillutla.github.io/prasadthinks">
+  <link rel="canonical" href="http://prasad-pillutla.github.io/Prasadthinks">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/bootstrap/bootstrap.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/stylesheets/bootstrap/responsive.css" media="screen, projection" rel="stylesheet" type="text/css">
@@ -91,7 +91,7 @@
         
           <form class="pull-right navbar-search" action="https://www.google.com/search" method="get">
             <fieldset role="search">
-              <input type="hidden" name="q" value="site:prasad-pillutla.github.io/prasadthinks" />
+              <input type="hidden" name="q" value="site:prasad-pillutla.github.io/Prasadthinks" />
               <input class="search-query" type="text" name="q" results="0" placeholder="Search"/>
             </fieldset>
           </form>
@@ -105,6 +105,131 @@
     <div class="row-fluid">
       <div class="span9">
   
+  
+  
+    <article>
+      
+  <header class="page-header">
+    
+      <h1 class="entry-title"><a href="/blog/2016/09/08/chatbots-integrating-with-your-chat-client/">Chatbots - Integrating With Your Chat Client</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-09-08T15:56:22+00:00'><span class='date'><span class='date-month'>Sep</span> <span class='date-day'>8</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>3:56 pm</span></time>
+        
+         | <a href="/blog/2016/09/08/chatbots-integrating-with-your-chat-client/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Chatbot, software world’s new celebrity. What is it? As per Wikipedia</p>
+
+<p><em>A <strong>Chatbot</strong> (also known as a <strong>Talkbot</strong>, <strong>Chatterbot</strong>, <strong>Bot</strong>, <strong>Chatterbox</strong>, <strong>Artificial Conversational Entity</strong>) is a computer program designed to simulate an intelligent conversation with one or more human users via auditory or textual methods</em>.</p>
+
+<p>The way I see it (in over simplified statement), it is a <strong>Web Service</strong> powered by Natural Language Processing and, driven by BigData and Machine/Deep Learning.</p>
+
+<p>There are many frameworks available to build a Chatbot and of all, I chose <a href="https://dev.botframework.com/">Microsoft Bot Framework</a> for obvious reasons. There are good number of articles on how to build Chatbot using <a href="https://dev.botframework.com/">Microsoft Bot Framework</a> and deploy it on Azure, which I’ll not repeat.</p>
+
+<p>Once Chatbot is built and deployed, a client application is required using which users can communicate with it. Microsoft, provides Out-of-box integration with Skype and allows Chatbot developers to integrate their Chatbots with Facebook Messenger, WeChat and <a href="https://docs.botframework.com/en-us/csharp/builder/sdkreference/gettingstarted.html#channels">few others</a>.</p>
+
+<p>There are situations when developers want their custom chat clients to interact with Chatbots and integration with custom chat clients is made possible by <a href="https://docs.botframework.com/en-us/restapi/directline/">DirectLine API</a>. Chatbot integration with custom chat clients is a challenge as there is little or no documentation and no samples available for reference. In this article I would using <a href="http://www.telerik.com/fiddler">fiddler</a> to demonstrate Chatbot integration with custom chat clients. Let’s get started</p>
+
+<p><strong>Step 1: Enable DirectLine API</strong>
+Login into your <a href="https://dev.botframework.com/">bot dashboard</a> using Microsoft Live ID. Once you register your bot you’ll supported channels.In the list of channels <strong><em>Add Direct Line</em></strong> channel.</p>
+
+<p><img src="/images/enableDirectLine.jpg" alt="" /></p>
+
+<p>When you select Add, a new browser tab will open up where you should <strong>Check</strong> <em>“Enable this bot on Direct Line”</em> option. You should also generate Direct Line Secret by clicking <em>“Generate Direct Line secret button”</em>. Save generated secret for later use.</p>
+
+<p><img src="/images/AddDL.jpg" alt="" /></p>
+
+<p><strong>Step 2: Use Fiddler to communicate with the Chatbot hosted on Azure</strong></p>
+
+<p><strong><em>Step 2.1: Initiate communication with Chatbot</em></strong>
+Any custom chat client should start its interaction with Chatbot by posting message to <a href="https://directline.botframework.com/api/conversations"></a>. Header of the POST message should have Authorization parameter, which take Direct Line secret generated in Step 1<br/>
+Authorization: BotConnector <strong><em><Direct Line secret></em></strong>
+Above request returns with <strong>return code 200</strong> and conversation id, like below</p>
+
+<p><img src="/images/Post%201.jpg" alt="" /></p>
+
+<p><strong>Note</strong> conversationId. This token/conversationId is <strong><em>valid only for 30 minutes</em></strong></p>
+
+<p><strong><em>Step 2.2: POST message to Chatbot</em></strong>
+Using the conversationId we can POST any number of messages to Chatbot. All messages to Chatbot will be posted to a new URL, which is <a href="https://directline.botframework.com/api/conversations/&lt;ConversationId>/messages"></a>, in this example the POST request will be sent to</p>
+
+<p><a href="https://directline.botframework.com/api/conversations/Jk21ZkYRQ6a/messages"></a></p>
+
+<pre><code>Request Body will be in the format below
+{
+"text": “&lt;Your Message&gt;”
+}
+</code></pre>
+
+<p><img src="/images/Post%202.jpg" alt="" /></p>
+
+<p>Above request doesn’t have a response body and <strong>return Code will be 204</strong>.</p>
+
+<p><img src="/images/Post%201%20response.jpg" alt="" /></p>
+
+<p><strong><em>Step 2.3: Retrieve Chatbot&rsquo;s response for the message sent</em></strong></p>
+
+<p>Above request doesn’t return response from Bot. To view responses from Bot we need to perform a GET request on same URI to which we posted in <em>Step 2.2: POST message to Chatbot</em></p>
+
+<p>GET <a href="https://directline.botframework.com/api/conversations/Jk21ZkYRQ6a/messages"></a></p>
+
+<p>Response from bot is present in “text” field</p>
+
+<p><img src="/images/Get%20Message.jpg" alt="" /></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header class="page-header">
+    
+      <h1 class="entry-title"><a href="/blog/2016/04/27/architect-attitude-architecture/">Architect Attitude Architecture</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-04-27T18:15:38+00:00'><span class='date'><span class='date-month'>Apr</span> <span class='date-day'>27</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>6:15 pm</span></time>
+        
+         | <a href="/blog/2016/04/27/architect-attitude-architecture/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>When you ask two architects with similar experiences to define a system, they would approach and define it very differently. What distinguishes the two defined architectures?  and Why are they different? I think and believe, Software architecture should not be considered merely as a set of models or structures, but should include the <strong>decisions</strong> that lead to these particular structures, and the rationale behind them.</p>
+
+<p><em>What is decision making?</em> and <em>How do we make decisions?</em>. Decision making is a cognitive process that involves selecting among several alternative possibilities. Each of us make decisions based on our attitude, which we develop over years based on our interpretation of world around us. This Attitude dictates what we choose from alternate possibilities. Architect who would like to have control on things might take monolithic design approach while other Architect with objective attitude might end up with distributed or micro-services driven architecture.</p>
+
+<p>Like Medicine, <strong>Software Architecture is not a science but a practice</strong>. Individuals’ attitude defines how he/she approaches and architects solution to the problem.</p>
+
+<p>To be a successful Architect it is important to use experiences to tune attitude and apply them to problem at hand.</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -688,6 +813,14 @@ Partitioned queues/topics can be created by enabling a checkbox box in configure
     <li class="nav-header">Recent Posts</li>
     
       <li class="post">
+        <a href="/blog/2016/09/08/chatbots-integrating-with-your-chat-client/">Chatbots - Integrating with your chat client</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/04/27/architect-attitude-architecture/">Architect Attitude Architecture</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2015/10/10/parallelism-on-multi-core-processors-continuation/">Parallelism on Multi-core Processors: Continuation</a>
       </li>
     
@@ -697,14 +830,6 @@ Partitioned queues/topics can be created by enabling a checkbox box in configure
     
       <li class="post">
         <a href="/blog/2015/07/10/azure-scheduler-can-post-to-azure-service-bus-queue-and-topic/">Azure Scheduler can post to Azure Service Bus Queue and Topic</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/07/02/azure-service-bus-partition-queues-and-topics-are-they-different/">Azure Service Bus Partition Queues and Topics? Are they different?</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/06/18/nuances-of-azure-event-hubs/">Nuances of Azure Event Hubs</a>
       </li>
     
   </ul>

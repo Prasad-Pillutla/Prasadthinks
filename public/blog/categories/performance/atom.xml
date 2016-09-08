@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: performance, | Prasad Thinks]]></title>
+  <link href="http://prasad-pillutla.github.io/Prasadthinks/blog/categories/performance/atom.xml" rel="self"/>
+  <link href="http://prasad-pillutla.github.io/Prasadthinks/"/>
+  <updated>2016-09-08T18:11:51+00:00</updated>
+  <id>http://prasad-pillutla.github.io/Prasadthinks/</id>
+  <author>
+    <name><![CDATA[Prasad]]></name>
+    <email><![CDATA[Prasad.pillu@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Parallelism on Multi-core Processors: Continuation]]></title>
+    <link href="http://prasad-pillutla.github.io/Prasadthinks/blog/2015/10/10/parallelism-on-multi-core-processors-continuation/"/>
+    <updated>2015-10-10T14:29:53+00:00</updated>
+    <id>http://prasad-pillutla.github.io/Prasadthinks/blog/2015/10/10/parallelism-on-multi-core-processors-continuation</id>
+    <content type="html"><![CDATA[<p>Thanks for taking time to read through my last post, <a href="http://www.prasadthinks.com/blog/2015/08/04/parallelism-on-multi-core-processors/">Parallelism on Multi-core Processors</a>. I was asked by many on how to handle calls to resources which are not thread-safe and have to be locked either by caller or by library, which exposes the resource. Let me pick the same example that I was using in <a href="http://www.prasadthinks.com/blog/2015/08/04/parallelism-on-multi-core-processors/">previous post</a> but simplifying it in the interest of time</p>
+
+<pre><code>for (int i = 0; i &lt; 10000; ++i)
+{
+    Console.WriteLine("Test Parallel");
+}
+</code></pre>
+
+<p>How much time does this for loop take to complete? Ok, How much time would a parallel version of it take to run? Guesses???</p>
+
+<pre><code>Parallel.For(0, 10000, i =&gt;
+{
+    Console.WriteLine("Test Parallel");
+});
+</code></pre>
+
+<p>On my laptop, simple for loop took <strong>~4 seconds</strong> and parallel for took <strong>~6 seconds</strong>.</p>
+
+<p>If you thought parallel loop will take less time, then you are wrong? Why does parallel version take more time? I’ll try to keep it simple and try my best not to confuse</p>
+
+<p>Let us assume a scenario where there are 2 threads (T1 and T2) and a resource which can be accessed by only one thread at a time, like resources like <strong>console</strong>, <strong>file handle</strong>, etc. In this scenario let us assume that Thread T1 started first and acquired lock on console and then Thread T2 started and tries to acquire lock on console but since it is already taken by Thread T1, Thread T2 will wait for X nanoseconds before attempting again to acquire lock. If lock is still not available Thread T2 will wait for X nanoseconds once again before attempting again to acquire lock and this continues until Thread T2 acquires lock or until it times out(if applicable), whichever is earlier. There is a fixed amount of time that a thread has to wait before attempting to acquire a lock and thread will not be informed about availability of lock so that it can come out of wait/sleep and take the lock. <strong>This is the overhead of contention and cannot be negotiated</strong>. This is what exactly is happening in Parallel For loop and leading to more execution time than simple for loop.</p>
+
+<p>Above explanation is overly simplified contention management in <strong>.Net</strong> but in reality it is much more complex and sophisticated. For the purpose of this topic above explanation serves enough.</p>
+
+<p>To conclude,<strong>whenever there is a contention for resource or a resource can be accessed by only one thread at a time it is always advised to take sequential route than parallel route for performance benefits</strong>.</p>
+
+<p>Let me know what you guys think…</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Parallelism on Multi-core Processors]]></title>
+    <link href="http://prasad-pillutla.github.io/Prasadthinks/blog/2015/08/04/parallelism-on-multi-core-processors/"/>
+    <updated>2015-08-04T16:55:13+00:00</updated>
+    <id>http://prasad-pillutla.github.io/Prasadthinks/blog/2015/08/04/parallelism-on-multi-core-processors</id>
+    <content type="html"><![CDATA[<p>Parallelism, a dark art, no one gets this right first time and many times after that as well. This is one area in software that cannot be understood without understanding underlying hardware(processor). To begin with let me explain the evolution of hardware and then dive into software aspects.</p>
+
+<p>Until early 2000’s processors were single core and were capable of executing only one instruction at a time. Focus of Intel and AMD was on adding more cycles to processor so that more instructions can be executed in a second and thereby reduce overall time that a program takes to execute. After reaching to certain point, heat sink issues didn’t allow adding any more cycles to processor.</p>
+
+<p>Then came multi-core processors, started with 2 cores and now we have 8 cores in consumer devices. But how many cores we can add? Each core produces certain amount of heat in a given time, which needs to be dissipated at equal rate so that the processor doesn’t meltdown. With every additional core that gets added there is a need to add more infrastructure to dissipate heat generated processor, which becomes unmanageable both from size and cost perspectives. This is when hardware geeks say we are done and we can’t improve processor to give more cycles because they are constrained by <strong>Laws of physics.</strong></p>
+
+<p>Now it is up to the software pros, to show some skill. We’ll come to skill part in a minute but before that do software programmers understand underlying hardware? Do they write hardware optimized code; I meant do they write programs that use all the cores that are given to them today? Good question, let me try out an example</p>
+
+<pre><code>namespace CompareTPL
+{
+    class Program
+    {
+        static int addPara(int num)
+        {
+            int j = 0;
+            for (int i = 0; i &lt; 10000000; ++i)
+            {
+                 j = i * i;
+            }
+
+            return j;
+        }
+
+        static void Main(string[] args)
+        {
+            for (int i = 0; i &lt; 1000; ++i)
+            {
+                addPara(5);
+            }
+        }
+    }
+}
+</code></pre>
+
+<p>A simple for loop, which madly iterates over a large number and computes product of two numbers. When I run this program on an <strong>Intel I7 quadcore machine with 16GB RAM</strong>, what do I see in <a href="https://msdn.microsoft.com/en-us/library/ff727783.aspx">perfmon</a></p>
+
+<p><img src="/images/Seq_processing.jpg" alt="" />
+Histogram bars tell me that above program is not utilizing all cores efficiently and also the load is unevenly distributed. This means that above program will take longer time to execute.</p>
+
+<p>Now I’ll modify program to use multiple threads to achieve parallelism by replacing <strong>for</strong> with <strong>Parallel.For</strong></p>
+
+<pre><code>namespace CompareTPL
+{
+    class Program
+    {
+        static int addPara(int num)
+        {
+            int j = 0;
+            for (int i = 0; i &lt; 10000000; ++i)
+            {
+                j = i * i;
+            }
+
+            return j;
+        }
+
+        static void Main(string[] args)
+        {
+
+            Parallel.For(0, 1000, i =&gt;
+            {
+                addPara(5);
+            });
+        }
+    }
+}
+</code></pre>
+
+<p>Now what does <a href="https://msdn.microsoft.com/en-us/library/ff727783.aspx">perfmon</a> show
+<img src="/images/Parallel_Processing.jpg" alt="" /></p>
+
+<p>Load is equally distributed among 4 cores and all cores are utilized to their maximum limit. This means the program will run faster. On my machine (<strong>Intel I7, 4 cores, 16GB RAM</strong>) it took 2.487 seconds to complete <strong>Parallel</strong> version and 5.320 seconds to complete <strong>simple for</strong> loop version. It tells me that using all cores effectively will execute program in less time. I’ve added <strong>.NetCLRLocksAndThreads</strong> counters to detect any contentions (in yellow) during execution of this program. Even though there are multiple threads executing same set of instructions there are no contentions reported.</p>
+
+<p>Let’s make this more interesting by replacing i*i with a console statement</p>
+
+<pre><code>class Program
+    {
+        static int addPara(int num)
+        {
+            int j = 0;
+            for (int i = 0; i &lt; 10000000; ++i)
+            {
+                Console.WriteLine("Test Parallel");
+            }
+
+            return j;
+        }
+
+        static void Main(string[] args)
+        {
+            Stopwatch s = new Stopwatch();
+            s.Start();
+            Parallel.For(0, 1000, i =&gt;
+            {
+                addPara(5);
+            });
+            s.Stop();
+            Console.WriteLine(s.ElapsedMilliseconds);
+        }
+    }
+}
+</code></pre>
+
+<p>What do I see from perfmon now? Utilization of cores is 100% and load is evenly distributed among 4 cores.
+<img src="/images/Contention.jpg" alt="" /></p>
+
+<p>Total Number of contentions (Total # of Contentions) have gone up significantly and Contentions Rate Per Second has also gone up. Which resource is causing the contention? Console, yes console is the resource under contention. Only one thread can write to console at any moment. For writing to console, a thread has to request for lock on <strong>Console</strong> and wait until it gets lock. There are multiple threads waiting for the same lock/resource and this has a profound impact on performance and execution time.</p>
+
+<p>This means that threads created by <strong>Parallel.For</strong> are waiting for Console to write to it. The same program (with Console) takes more than 30 minutes to complete, which earlier took 2.487 seconds (with no console but multiplication of two numbers i*i). Locks and Contentions are very costly and can kill an application by choking the performance.</p>
+
+<p>Other kind of dependencies that slow down the application are
+    int op1 = a + b;
+    int op2 = op1 + c;</p>
+
+<p>In the above code fragment, second expression(op1 + c) cannot be executed until first expression(op1 = a + b) is executed because second expression needs result of first expression(op1) as input. This instruction level dependency clips compiler and forces it to generate sequential instructions which operating system cannot execute in parallel on available cores.</p>
+
+<p>These are the challenges that a hardware engineer cannot address and only software engineer can. No matter how many more cycles we add to processor we cannot improve program’s performance because there is a flaw in the program that is stopping it from being executed in parallel on available cores.</p>
+
+<p>From above examples, it is evident that we have enough processing power today to get things done decently fast and we are not writing programs to make full use of underlying processors. Hence I support hardware guys not adding any more cycles to processor because they already have added more cycles than what a fairly complex program needs.</p>
+
+<p>The point I was trying to explain is that no matter how much parallelism we introduce if there is a contention for resource we’ll not reap benefits. To conclude, I’ll summarize things that one needs to remember when introducing parallelism to gain performance</p>
+
+<ul>
+<li><p>Today’s Processors and Operating systems are smart enough to distribute load evenly among to all available cores.</p></li>
+<li><p>Programmer has to make sure that all threads or tasks that he/she are introducing are fairly independent so that there are no contentions. This will allow compiler to break instructions into independent instructions which Operating System can execute in parallel on different cores.</p></li>
+<li><p>Deploying an under-performing application on a multi-core platform will not improve performance beyond certain limit. Application has to go through refactoring to reap maximum benefits of multi-core platforms on which it is deployed.</p></li>
+<li><p>Look into Contentions and processor utilization from Perfmon to evaluate your program’s performance. If you notice contentions or underutilization of available processor cores, then focus on refactoring code.</p></li>
+</ul>
+
+
+<p>In next blog I’ll try to explain differences between Parallel and Asynchronous programming; and also explain when to use which paradigm.</p>
+]]></content>
+  </entry>
+  
+</feed>
