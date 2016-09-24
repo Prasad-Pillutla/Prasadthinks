@@ -4,7 +4,7 @@
 
 url: http://prasad-pillutla.github.io/Prasadthinks
 title: Prasad Thinks
-subtitle: 
+subtitle:
 author: Prasad
 simple_search: https://www.google.com/search
 description:
@@ -91,9 +91,9 @@ delicious_user: prasadpillutla
 delicious_count: 3
 
 # Disqus Comments
-disqus_short_name: PrasadPillutla
+disqus_short_name: prasadthinkscom
 disqus_show_comment_count: true
-disqus_url: prasadthinks
+disqus_url: https://prasadthinkscom.disqus.com
 
 # Google Analytics
 google_analytics_tracking_id: UA-62377917-1
