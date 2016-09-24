@@ -14,5 +14,5 @@ professional blog. Here, I share my experiences in software development, which I
 India. and currently working on Visual Computing, Deep Learning, Cloud Computing, Azure and Internet scale distributed systems. **This blog, its content and opinions are my own**.
 
 You can follow me on [RSS](<http://feeds.feedburner.com/PrasadThinks>),
-[Linkedin](<https://in.linkedin.com/in/prasad-pillutla-3978a31>) and
+[Linkedin](<https://in.linkedin.com/in/prasad-pillutla-3978a312>) and
 [Twitter](<https://twitter.com/prasad_pillu>)
